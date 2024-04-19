@@ -35,17 +35,6 @@ def load_datasaurus(num=5000):
     datasaurus_data = torch.stack([x, y], dim=-1)
 
     return datasaurus_data
-    # rng = np.random.default_rng(42)
-    # ix = rng.integers(0, len(datasaurus_data), num)
-    # x = datasaurus_data["x"].iloc[ix].tolist()
-    # x = np.array(x) + rng.normal(size=len(x)) * 0.15
-    # y = datasaurus_data["y"].iloc[ix].tolist()
-    # y = np.array(y) + rng.normal(size=len(x)) * 0.15
-    # x = (x/54 - 1) * 4
-    # y = (y/48 - 1) * 4
-    # X = np.stack((x, y), axis=1)
-
-    # return torch.from_numpy(X.astype(np.float32))
 
 class SinusoidalPositionalEmbedding(nn.Module):
     def __init__(self, embedding_dim=10, max_length=1000):
@@ -198,12 +187,8 @@ class DiffusionModel(nn.Module):
     
     def sample(self, num_samples=1000, num_timesteps=1000, device='cpu'):
         sample = torch.randn(num_samples, 2)
-        # timesteps = list(range(0, self.total_timesteps, self.total_timesteps // num_timesteps))[::-1]
         timesteps = list(range(self.total_timesteps))[::-1]
-        print(f"Num samples: {num_samples}")
-        print(f"Num timesteps: {num_timesteps}")
         interemediate_values = torch.empty(num_samples, num_timesteps, 2)
-        print(f"Intermediate values shape {interemediate_values.shape}")
 
         for i, t in enumerate(timesteps):
             t = torch.from_numpy(np.repeat(t, num_samples)).long()
@@ -213,82 +198,6 @@ class DiffusionModel(nn.Module):
             interemediate_values[:, i, :] = sample
         
         return sample, interemediate_values
-
-    # def add_noise(self, x, noise, t):
-    #     """
-    #         Adds noise to the data point to the given time step
-    #     """
-    #     # Compute the noise scale 
-    #     alpha_prod = self.cumulative_alphas[t, None] # From the DDPM paper, the variance is the product of alphas up to a timestep
-    #     # Take the combination to mix in the noise 
-    #     noisy_x = alpha_prod ** 0.5 * x + (1 - alpha_prod) ** 0.5 * noise
-        
-    #     return noisy_x
-    
-    # def predict_noise(self, x, t):
-    #     """
-    #         Predicts the noise at a noisy sample and time step
-    #     """
-    #     time_embedding = self.positional_embedding(t)
-    #     return self.score_network(x, time_embedding)
-    # def sample(self, num_samples=1000, num_timesteps=10, device='cpu'):
-    # def sample(self, num_samples=1000, num_timesteps=10, device='a'):
-    #     """
-    #         Samples using DDPM 
-    #     """
-    #     # Linearly sample timesteps 
-    #     time_steps = torch.linspace(0, self.total_timesteps - 1, num_timesteps).to(device).long()
-    #     time_steps = time_steps.flip(0) # Reverse the time steps
-    #     time_steps = time_steps.repeat(num_samples, 1) # Reverse the time steps
-    #     # Sample from a standard normal
-    #     x_t = torch.randn(num_samples, 2).to(device)
-    #     # Scale the noise to the initial noise distribution
-    #     init_beta = self.betas[time_steps[:, 0], None]
-    #     x_t = x_t * init_beta ** 0.5
-    #     # Perform the denoising
-    #     for i in range(num_timesteps):
-    #         # Get the current and previous timesteps in [0, T]
-    #         current_t = time_steps[:, i]
-    #         # prev_t = time_steps[:, i - 1]
-    #         # Compute the predicted noise
-    #         pred_noise = self.predict_noise(x_t, current_t)
-    #         # Scale the predicted noise
-    #         beta_t = self.betas[current_t, None]
-    #         alpha_prod_t = self.cumulative_alphas[current_t, None]
-    #         # print(f"Alpha Prod T: {alpha_prod_t.shape}")
-    #         # print(f"Beta T: {beta_t.shape}")
-    #         # print(f"Pred Noise: {pred_noise.shape}")
-    #         scaled_pred_noise = (beta_t ** 0.5 / (1 - alpha_prod_t) ** 0.5) * pred_noise
-    #         # Get the variance for the noise
-    #         # Make noise and scale it
-    #         scaled_noise = torch.randn_like(x_t) * beta_t ** 0.5
-    #         # Compute the x_next 
-    #         alpha_t = self.alphas[current_t, None]
-    #         x_t = 1 / alpha_t ** 0.5 * (x_t - scaled_pred_noise) + scaled_noise
-    #         # Compute the predicted noise 
-    #         # # Compute the alpha and beta products
-    #         # alpha_prod_t = self.cumulative_alphas[current_t]
-    #         # alpha_prod_t = alpha_prod_t.unsqueeze(-1)
-    #         # beta_prod_t = 1 - alpha_prod_t
-    #         # # beta_prod_t = beta_prod_t.unsqueeze(-1)
-    #         # alpha_prod_t_prev = self.cumulative_alphas[prev_t]
-    #         # alpha_prod_t_prev = alpha_prod_t_prev.unsqueeze(-1)
-    #         # beta_prod_t_prev = 1 - alpha_prod_t_prev
-    #         # # beta_prod_t_prev = beta_prod_t_prev.unsqueeze(-1)
-    #         # current_alpha_t = alpha_prod_t / alpha_prod_t_prev
-    #         # current_beta_t = 1 - current_alpha_t
-    #         # # Predict the noise
-    #         # pred_noise = self.predict_noise(x_t, current_t)
-    #         # # Predict the original sample 
-    #         # pred_original_sample = (x_t - beta_prod_t ** (0.5) * pred_noise) / alpha_prod_t ** (0.5)
-    #         # # Predict the previous sample
-    #         # pred_original_sample_coeff = (alpha_prod_t_prev ** (0.5) * current_beta_t) / beta_prod_t
-    #         # current_sample_coeff = current_alpha_t ** (0.5) * beta_prod_t_prev / beta_prod_t
-    #         # pred_prev_sample = pred_original_sample_coeff * pred_original_sample + current_sample_coeff * x_t
-    #         # Update the sample
-    #         # x_t = pred_prev_sample
-
-    #     return x_t
 
 # Train the model
 def train(model, data, num_iterations=1000, batch_size=32, learning_rate=1e-4, device='cpu'):
