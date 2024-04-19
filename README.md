@@ -15,12 +15,13 @@ Langevin MC draws on methods from statistical physics and is heavily related to 
 
 Abdul Fatir has a great blog post that goes much more in depth on this topic [here](https://abdulfatir.com/blog/2020/Langevin-Monte-Carlo/). 
 
-![Alt Text](media/LangevinDynamics.mp4)
+https://github.com/helblazer811/diffusion-visualizations/assets/14181830/df5409fd-19fa-4184-a65c-70355882d078
 
 Some of the code to construct this is in ```visualizations```. 
 
 ### Denoising Diffusion Probabilistic Models
 
 Diffusion models allow a user to sample from a distribution. Unlike Langevin Dynamics, we don't need to actually know the true log gradient of a distribution, but can instead approximate it with a neural network. 
-`
-![Alt Text](media/DiffusionVideo.mp4)
+
+https://github.com/helblazer811/diffusion-visualizations/assets/14181830/78389b38-a6b4-449a-a11b-3dcd1bdfe7ba
+
