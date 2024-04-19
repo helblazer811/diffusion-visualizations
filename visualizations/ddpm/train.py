@@ -33,6 +33,8 @@ def load_datasaurus(num=5000):
     x = torch.tensor(datasaurus_data['x'].values, dtype=torch.float32)
     y = torch.tensor(datasaurus_data['y'].values, dtype=torch.float32)
     datasaurus_data = torch.stack([x, y], dim=-1)
+    # Center and standardize the data
+    datasaurus_data = (datasaurus_data - datasaurus_data.mean(dim=0)) / datasaurus_data.std(dim=0)
 
     return datasaurus_data
 
@@ -256,9 +258,9 @@ if __name__ == "__main__":
     # Make the diffusion model
     model = DiffusionModel()
     # Load the spiral dataset (just a torch tensor of dimension (N, 2))
-    data = make_spiral_data(num_examples=1000, noise=0.0)
-    # data = load_datasaurus()
+    # data = make_spiral_data(num_examples=1000, noise=0.0)
+    data = load_datasaurus()
     # Run the training loop
-    train(model, data, num_iterations=100000, batch_size=200, learning_rate=1e-3, device='cpu')
+    train(model, data, num_iterations=700000, batch_size=200, learning_rate=1e-4, device='cpu')
     # Save the state dict
-    torch.save(model.state_dict(), 'models/model.pth')
+    torch.save(model.state_dict(), 'models/dino_model.pth')
