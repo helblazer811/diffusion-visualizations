@@ -25,3 +25,10 @@ Diffusion models allow a user to sample from a distribution. Unlike Langevin Dyn
 
 https://github.com/helblazer811/diffusion-visualizations/assets/14181830/78389b38-a6b4-449a-a11b-3dcd1bdfe7ba
 
+
+Here is a visualization of points being sampled from a simple 2D distribution using a diffusion model. 
+
+Can you guess what the shape of the distribution is haha?
+
+https://github.com/helblazer811/diffusion-visualizations/assets/14181830/47ec6d38-35e2-4a6e-b84f-aa3650f82458
+
