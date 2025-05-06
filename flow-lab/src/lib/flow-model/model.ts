@@ -46,6 +46,38 @@ export class FlowModel {
         return x_t.add(update);
       });
     }
+
+    /**
+     * Draw `num_samples` samples from the model at time step `t`
+     * @param num_samples number of samples to draw
+     * @param t timestep to draw samples at in [0, num_total_steps]
+     * @param num_total_steps number of total steps to simulate the ODE
+     * @returns tf.Tensor2D of shape [num_total_steps, num_samples, dim]
+     */
+    sample(num_samples: number, num_total_steps: number = 100): tf.Tensor3D {
+        return tf.tidy(() => {
+            // Draw some initial samples from the source distribution 
+            const x_0 = tf.randomNormal([num_samples, this.dim]);
+            // Draw some linear spaced timesteps in [0, 1]
+            const t_steps = tf.linspace(0, 1, num_total_steps);
+            // Simulate the ODE until timestep t for all samples
+            let all_step_data: tf.Tensor2D[] = [];
+            let x_t: tf.Tensor2D = x_0;
+            for (let i = 0; i < num_total_steps - 1; i++) {
+                const t_i = t_steps.slice([i], [1]); // current time
+                const t_i_repeated = tf.tile(t_i, [num_samples]);
+                const t_next = t_steps.slice([i + 1], [1]); // next time
+                const t_next_repeated = tf.tile(t_next, [num_samples]);
+                // Do the step using the midpoint method
+                x_t = this.step(x_t, t_i_repeated, t_next_repeated);
+                // Store the result in the all_step_data tensor
+                all_step_data.push(x_t)
+            }
+            console.log(all_step_data.length)
+            // Return all samples
+            return tf.stack(all_step_data);
+        });
+    }
   }
 
 export function trainFlowModel(
@@ -58,7 +90,6 @@ export function trainFlowModel(
     // Initialize the flow model network
     const flow = new FlowModel(dim, hidden);
     // Run training
-    console.log('Training the flow model...');
     // Set up the loss
     const lossFn = (pred: tf.Tensor, target: tf.Tensor) => {
         return tf.losses.meanSquaredError(target, pred);
@@ -67,7 +98,6 @@ export function trainFlowModel(
     const optimizer = tf.train.adam(0.01);
     // Run the training loop
     for (let i = 0; i < iterations; i++) {
-        console.log(`Iteration ${i + 1} of ${iterations}`);
         tf.tidy(() => { // Clear memory
             // Sample a batch of target distribution samples from `data`
             const indices = tf.randomUniform([batchSize], 0, data.shape[0], 'int32');

@@ -6,24 +6,26 @@
     export let currentTime: number = 0.0; // Default value for the time
     export let isPlaying: boolean = false; // Flag to indicate if the animation is playing
     export let targetDistributionSamples = tf.tensor([]); // Number of samples to generate
+    export let sourceDistributionSamples = tf.tensor([]); // Number of samples to generate
+    export let currentDistributionSamples = tf.tensor([]); // Number of samples to generate
+    export let canvasWidth: number = 1400; // Width of the canvas
+    export let canvasHeight: number = 600; // Height of the canvas
 
-    let canvas: HTMLCanvasElement;
-    let ctx;
+    // let canvas: HTMLCanvasElement;
+    // let ctx;
+    let svgElement: SVGSVGElement;
 
     function plotContour(
         data: tf.Tensor,
-        width: number = 800,
-        height: number = 800,
+        opacity: number = 0.5,
+        xLocation: number = 0,
         nx: number = 50,
-        ny: number = 50
+        ny: number = 50,
     ) {
-        console.log('Plotting contour');
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
 
         // 2. Build histogram
-        const xBins = nx;
-        const yBins = ny;
         const points = values;
         let xMin = d3.min(points, d => d[0]);
         let xMax = d3.max(points, d => d[0]);
@@ -35,15 +37,15 @@
         xMax = xMax + 0.1 * dataWidth;
         yMin = yMin - 0.1 * dataHeight;
         yMax = yMax + 0.1 * dataHeight; 
-        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, width]);
-        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, height]);
+        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, canvasHeight]);
+        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, canvasHeight]);
 
         const contours = d3.contourDensity()
             .x(d => xScale(d[0]))
             .y(d => yScale(d[1]))
-            .size([width, height])
+            .size([canvasHeight, canvasHeight])
             .bandwidth(30)
-            .thresholds(4)
+            .thresholds(5)
             (values)
 
         // 4. Scales for drawing
@@ -60,50 +62,35 @@
             .attr("fill", function(d) { return color(d.value); })
             .attr("stroke", "#000")
             .attr("stroke-width", 2)
-            .attr("stroke-opacity", 0.5)
+            .attr("stroke-opacity", opacity)
+            .attr("fill-opacity", opacity)
+            .attr("transform", `translate(${xLocation}, 0)`) // Apply translation
     }
 
     onMount(() => {
         // Set up canvas
-        ctx = canvas.getContext("2d");
+        // ctx = canvas.getContext("2d");
         // Plot contours 
         // plotContour(targetDistributionSamples)
+        // svgElement = d3.select
     });
 
     // Run the plot contour if targetDistributionSamples changes
-    $: if (targetDistributionSamples) {
-        if (ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-            plotContour(targetDistributionSamples);
-            // let data = targetDistributionSamples.arraySync() as number[][];
-            // // P
-            // const ctx = canvas.getContext("2d");
-
-            // const width = canvas.width;
-            // const height = canvas.height;
-            // const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-
-            // const xScale = d3.scaleLinear()
-            //     .domain([d3.min(data, d => d[0]), d3.max(data, d => d[0])])
-            //     .range([margin.left, width - margin.right]);
-
-            // const yScale = d3.scaleLinear()
-            //     .domain([d3.min(data, d => d[1]), d3.max(data, d => d[1])])
-            //     .range([height - margin.bottom, margin.top]); // y-axis flipped
-
-            // // Draw points
-            // ctx.fillStyle = "steelblue";
-            // data.forEach(([x, y]) => {
-            //     ctx.beginPath();
-            //     ctx.arc(xScale(x), yScale(y), 5, 0, 2 * Math.PI);
-            //     ctx.fill();
-            // });
-        }
+    $: if (targetDistributionSamples && svgElement || currentDistributionSamples && svgElement) {
+        // Clear existing contours
+        const svg = d3.select(svgElement);
+        svg.selectAll("*").remove(); // Clear previous contours
+        // Plot the source distribution
+        plotContour(sourceDistributionSamples, 0.15, 0);
+        // Plot the target distribution
+        plotContour(targetDistributionSamples, 0.15, 800);
+        // Plot the current distribution
+        plotContour(currentDistributionSamples, 1.0, 400);
     }
 
 </script>
 
 <div class="marginal-flow-canvas">
-    <canvas id="densityCanvas" bind:this={canvas} width="0" height="0"></canvas>
-    <svg width="800" height="800"></svg>   
+    <!-- <canvas id="densityCanvas" bind:this={canvas} width="0" height="0"></canvas> -->
+    <svg bind:this={svgElement} width={canvasWidth} height={canvasHeight}></svg>   
 </div>
