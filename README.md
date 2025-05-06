@@ -11,6 +11,7 @@ Flow Matching aims to learn a "flow" that transforms a simple source distributio
 
 This video shows the evolution of the marginal probability path as a source distribution is transformed to a target distribution.
 
+https://github.com/user-attachments/assets/9312aa8c-025b-41b7-a84c-9b738430938c
 
 ### Langevin Monte Carlo
 
