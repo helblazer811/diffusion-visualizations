@@ -55,14 +55,14 @@
             targetDistributionSamples,
             2,
             hiddenDim,
-            200,
+            2000,
             64,
         );
         // Here run simulate the trajectories of the flow model and save all of the timesteps
         console.log("Sampling from the flow model");
-        allTimeSamples = flowModel.sample(1000, numTimeSteps);
-        console.log('All time samples: ', allTimeSamples);
-        currentDistributionSamples = tf.gather(allTimeSamples, 50); // shape [num_samples, dim]
+        allTimeSamples = flowModel.sample(10000, numTimeSteps);
+        // Pull out the first timestep samples
+        currentDistributionSamples = tf.gather(allTimeSamples, 0); // shape [num_samples, dim]
         console.log('Current distribution samples: ', currentDistributionSamples);
         // Set up an interval to increase the timer periodically
         const interval = setInterval(() => {
@@ -74,6 +74,8 @@
                 // For now draw amples at a fixed timestep 0.5 
                 // console.log("Drawing samples at time: ", currentTime);
                 // currentDistributionSamples = flowModel.sample(numSamples, 95, 100);
+                // Update the current distribution samples based on the current time
+                currentDistributionSamples = tf.gather(allTimeSamples, Math.floor(currentTime * numTimeSteps));
             }
         }, 100);
         // Clear the interval when the component is destroyed
