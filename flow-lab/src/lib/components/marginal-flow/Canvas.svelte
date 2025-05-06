@@ -10,36 +10,23 @@
     export let currentDistributionSamples = tf.tensor([]); // Number of samples to generate
     export let canvasWidth: number = 1400; // Width of the canvas
     export let canvasHeight: number = 600; // Height of the canvas
+    export let domainRange: object = { xMin: -3, xMax: 3, yMin: -3, yMax: 3 }; // Domain range for the plot
     const singleTimeCanvasWidth = canvasHeight;
 
-    // let canvas: HTMLCanvasElement;
-    // let ctx;
     let svgElement: SVGSVGElement;
 
     function plotContour(
         data: tf.Tensor,
         opacity: number = 0.5,
         xLocation: number = 0,
-        nx: number = 50,
-        ny: number = 50,
     ) {
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
 
         // 2. Build histogram
         const points = values;
-        let xMin = d3.min(points, d => d[0]);
-        let xMax = d3.max(points, d => d[0]);
-        let yMin = d3.min(points, d => d[1]);
-        let yMax = d3.max(points, d => d[1]);
-        const dataWidth = xMax - xMin;
-        const dataHeight = yMax - yMin;
-        xMin = xMin - 0.1 * dataWidth;
-        xMax = xMax + 0.1 * dataWidth;
-        yMin = yMin - 0.1 * dataHeight;
-        yMax = yMax + 0.1 * dataHeight; 
-        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, singleTimeCanvasWidth]);
-        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, singleTimeCanvasWidth]);
+        const xScale = d3.scaleLinear().domain([domainRange.xMin, domainRange.xMax]).range([0, singleTimeCanvasWidth]);
+        const yScale = d3.scaleLinear().domain([domainRange.yMin, domainRange.yMax]).range([0, singleTimeCanvasWidth]);
 
         const contours = d3.contourDensity()
             .x(d => xScale(d[0]))
@@ -67,14 +54,6 @@
             .attr("fill-opacity", opacity)
             .attr("transform", `translate(${xLocation}, 0)`) // Apply translation
     }
-
-    onMount(() => {
-        // Set up canvas
-        // ctx = canvas.getContext("2d");
-        // Plot contours 
-        // plotContour(targetDistributionSamples)
-        // svgElement = d3.select
-    });
 
     // Run the plot contour if targetDistributionSamples changes
     $: if (targetDistributionSamples && svgElement || currentDistributionSamples && svgElement) {

@@ -79,7 +79,7 @@ export class FlowModel {
             return tf.stack(all_step_data);
         });
     }
-  }
+}
 
 export function trainFlowModel(
     data: tf.Tensor2D,

@@ -5,6 +5,7 @@
     import { sampleGaussianMixture, sampleMultivariateNormal } from '$lib/flow-model/helpers.ts'; // Import the utility function
     import { onMount } from 'svelte';
     import * as tf from '@tensorflow/tfjs';
+    import * as d3 from 'd3';
 
     // Props for the MarginalFlow component
     export let currentTime: number = 0.0; // Default value for the time
@@ -23,6 +24,7 @@
     let sourceDistributionSamples;
     let currentDistributionSamples;
     let allTimeSamples;
+    let domainRange;
 
     // Load up the cached flow model 
     onMount(async () => {
@@ -61,7 +63,21 @@
         );
         // Here run simulate the trajectories of the flow model and save all of the timesteps
         console.log("Sampling from the flow model");
-        allTimeSamples = flowModel.sample(numSamples, numTimeSteps);
+        allTimeSamples = flowModel.sample(numSamples, numTimeSteps); // shape [num_time_steps, num_samples, dim]
+        // Compute the range of the points to use for the domain of each contour map
+        let flatAllTimeSamples = tf.reshape(allTimeSamples, [(numTimeSteps - 1) * numSamples, 2]); // shape [num_time_steps * num_samples, dim]
+        flatAllTimeSamples = flatAllTimeSamples.arraySync();
+        const xMin = d3.min(flatAllTimeSamples, d => d[0]);
+        const xMax = d3.max(flatAllTimeSamples, d => d[0]);
+        const yMin = d3.min(flatAllTimeSamples, d => d[1]);
+        const yMax = d3.max(flatAllTimeSamples, d => d[1]);
+        domainRange = {
+            xMin: xMin - 0.1 * (xMax - xMin),
+            xMax: xMax + 0.1 * (xMax - xMin),
+            yMin: yMin - 0.1 * (yMax - yMin),
+            yMax: yMax + 0.1 * (yMax - yMin),
+        }
+        console.log("Domain range: ", domainRange);
         // Pull out the first timestep samples
         currentDistributionSamples = tf.gather(allTimeSamples, 0); // shape [num_samples, dim]
         // Set up an interval to increase the timer periodically
@@ -93,6 +109,6 @@
 </style>
 
 <div class="marginal-flow">
-    <Canvas {currentTime} {isPlaying} {targetDistributionSamples} {sourceDistributionSamples} {currentDistributionSamples} {canvasWidth} {canvasHeight}/>
+    <Canvas {currentTime} {isPlaying} {targetDistributionSamples} {sourceDistributionSamples} {currentDistributionSamples} {canvasWidth} {canvasHeight} {domainRange}/>
     <Slider bind:value={currentTime} />
 </div>

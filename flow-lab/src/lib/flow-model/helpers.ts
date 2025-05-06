@@ -72,17 +72,18 @@ export function sampleMultivariateNormal(mean, cov, numSamples = 1) {
 export function sampleGaussianMixture(
     numSamples: number
 ):tf.Tensor2D {
+    console.log(tf.getBackend());
     // Return a mixture of 3 Gaussian distributions spaced out like a triangle
     const means = [
-        tf.tensor([0, 0]),
-        tf.tensor([5, 5]),
-        tf.tensor([-5, -5])
+        tf.tensor([-4, 0]),
+        tf.tensor([4, 0]),
+        tf.tensor([0, 6.92])
     ];
     const covs = [
-        tf.tensor([[1.0, 0.8], [0.8, 1.0]]),
-        tf.tensor([[1.0, -0.8], [-0.8, 1.0]]),
-        tf.tensor([[1.0, 0.5], [0.5, 1.0]])
-    ];
+        tf.tensor([[1.0, 0.0], [0.0, 1.0]]),
+        tf.tensor([[1.0, 0.0], [0.0, 1.0]]),
+        tf.tensor([[1.0, 0.0], [0.0, 1.0]])
+    ]
 
     const samplesPerComponent = Math.floor(numSamples / means.length);
     const sampleGap = numSamples - samplesPerComponent * means.length; // Remaining samples to be added to the last component
