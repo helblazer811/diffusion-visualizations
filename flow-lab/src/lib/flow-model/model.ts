@@ -59,11 +59,13 @@ export class FlowModel {
             // Draw some initial samples from the source distribution 
             const x_0 = tf.randomNormal([num_samples, this.dim]);
             // Draw some linear spaced timesteps in [0, 1]
-            const t_steps = tf.linspace(0, 1, num_total_steps);
+            const t_steps = tf.linspace(0, 1, num_total_steps + 1);
             // Simulate the ODE until timestep t for all samples
             let all_step_data: tf.Tensor2D[] = [];
+            // Store the initial sample
+            all_step_data.push(x_0);
             let x_t: tf.Tensor2D = x_0;
-            for (let i = 0; i < num_total_steps - 1; i++) {
+            for (let i = 0; i < num_total_steps; i++) {
                 console.log("Sample timestep: ", i);
                 const t_i = t_steps.slice([i], [1]); // current time
                 const t_i_repeated = tf.tile(t_i, [num_samples]);
@@ -74,7 +76,8 @@ export class FlowModel {
                 // Store the result in the all_step_data tensor
                 all_step_data.push(x_t)
             }
-            console.log(all_step_data.length)
+            // Drop the last element 
+            all_step_data.pop();
             // Return all samples
             return tf.stack(all_step_data);
         });

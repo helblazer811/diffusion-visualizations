@@ -20,11 +20,11 @@
     const numTimeSteps: number = 300; // Number of time steps for the flow model
     let flowModelPath: string = '/models/flow_model.json'; // Path to the flow model
     let flowModel: flow.FlowModel; // Flow model object
-    let targetDistributionSamples;
-    let sourceDistributionSamples;
-    let currentDistributionSamples;
-    let allTimeSamples;
-    let domainRange;
+    let targetDistributionSamples: tf.Tensor; // Target distribution samples
+    let sourceDistributionSamples: tf.Tensor; // Source distribution samples
+    let currentDistributionSamples: tf.Tensor; // Current distribution samples
+    let allTimeSamples: tf.Tensor[]; // All time samples from the flow model
+    let domainRange: object = { xMin: -3, xMax: 3, yMin: -3, yMax: 3 }; // Domain range for the plot
 
     // Load up the cached flow model 
     onMount(async () => {
@@ -65,17 +65,17 @@
         console.log("Sampling from the flow model");
         allTimeSamples = flowModel.sample(numSamples, numTimeSteps); // shape [num_time_steps, num_samples, dim]
         // Compute the range of the points to use for the domain of each contour map
-        let flatAllTimeSamples = tf.reshape(allTimeSamples, [(numTimeSteps - 1) * numSamples, 2]); // shape [num_time_steps * num_samples, dim]
+        let flatAllTimeSamples = tf.reshape(allTimeSamples, [numSamples * numTimeSteps, 2]); // shape [num_time_steps * num_samples, dim]
         flatAllTimeSamples = flatAllTimeSamples.arraySync();
         const xMin = d3.min(flatAllTimeSamples, d => d[0]);
         const xMax = d3.max(flatAllTimeSamples, d => d[0]);
         const yMin = d3.min(flatAllTimeSamples, d => d[1]);
         const yMax = d3.max(flatAllTimeSamples, d => d[1]);
         domainRange = {
-            xMin: xMin - 0.05 * (xMax - xMin),
-            xMax: xMax + 0.05 * (xMax - xMin),
-            yMin: yMin - 0.05 * (yMax - yMin),
-            yMax: yMax + 0.05 * (yMax - yMin),
+            xMin: xMin - 0.02 * (xMax - xMin),
+            xMax: xMax + 0.02 * (xMax - xMin),
+            yMin: yMin - 0.02 * (yMax - yMin),
+            yMax: yMax + 0.02 * (yMax - yMin),
         }
         console.log("Domain range: ", domainRange);
         // Pull out the first timestep samples
@@ -99,8 +99,12 @@
     
     // Set up something to react when current Time changes to update the current distribution samples
     $: if (currentTime && allTimeSamples) {
+        let currentTimeIndex = Math.floor(currentTime * numTimeSteps);
+        if (currentTimeIndex >= numTimeSteps) {
+            currentTimeIndex = numTimeSteps - 1;
+        }
         // Update the current distribution samples based on the current time
-        currentDistributionSamples = tf.gather(allTimeSamples, Math.floor(currentTime * numTimeSteps));
+        currentDistributionSamples = tf.gather(allTimeSamples, currentTimeIndex); // shape [num_samples, dim]);
     }
 
 </script>
