@@ -5,6 +5,13 @@ For now this repository is a collection of visualizations that I have been putti
 
 # Visualizations 
 
+### Flow Based Models
+
+Flow Matching aims to learn a "flow" that transforms a simple source distribution (e.g. Gaussian) to an arbitrarily complex target distribution.
+
+This video shows the evolution of the marginal probability path as a source distribution is transformed to a target distribution.
+
+
 ### Langevin Monte Carlo
 
 Langevin Monte Carlo allows you to sample from a probability distribution using its log gradient ∇ log p(x). This is very useful when a distribution is difficult to sample from directly, but you have information about it's gradient (as is true in many deep learning based techniques). 
