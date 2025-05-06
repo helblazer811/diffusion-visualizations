@@ -2,6 +2,8 @@
     import * as d3 from 'd3';
     import { onMount } from 'svelte';
     import * as tf from '@tensorflow/tfjs';
+    import katex from 'katex';
+    import 'katex/dist/katex.min.css';
     
     export let currentTime: number = 0.0; // Default value for the time
     export let isPlaying: boolean = false; // Flag to indicate if the animation is playing
@@ -62,15 +64,66 @@
         svg.selectAll("*").remove(); // Clear previous contours
         // Plot the source distribution
         plotContour(sourceDistributionSamples, 0.15, 0);
+        // Plot title above the contour 
+        svg.append("text")
+            .attr("x", singleTimeCanvasWidth / 2)
+            .attr("y", 70)
+            .attr("text-anchor", "middle")
+            .style("font-size", "24px")
+            .style("font-family", "Helvetica, sans-serif")
+            .style("fill", "#7b7b7b")
+            .text("Source Distribution");
         // Plot the target distribution
         plotContour(targetDistributionSamples, 0.15, 800);
+        // Plot title above the contour
+        svg.append("text")
+            .attr("x", 800 + singleTimeCanvasWidth / 2)
+            .attr("y", 70)
+            .attr("text-anchor", "middle")
+            .style("font-size", "24px")
+            .style("font-family", "Helvetica, sans-serif")
+            .style("fill", "#7b7b7b")
+            .text("Target Distribution");
         // Plot the current distribution
         // First compute the x location based on the current time
         const xLocation = currentTime * (canvasWidth - singleTimeCanvasWidth);
         plotContour(currentDistributionSamples, 1.0, xLocation);
+        // Draw latex over current distribution
+        // Only show if the x location is not overlapping with source or target
+        if (xLocation > 150 && xLocation < canvasWidth - singleTimeCanvasWidth - 150) {
+            // Create a foreignObject to hold HTML
+            const fo = svg.append("foreignObject")
+                .attr("x", xLocation + singleTimeCanvasWidth / 2 - 150)
+                .attr("y", 70 - 52)
+                .attr("text-anchor", "middle")
+                .attr("width", 300)
+                .attr("height", 100)
+                .style("margin", "0");
+
+            const div = fo.append("xhtml:div")
+                .style("font", "24px 'KaTeX_Main', serif")
+                .style("text-align", "center")
+                .style("line-height", "100px")
+                .style("color", "#7b7b7b")
+                .style("border-radius", "5px")
+                .style("margin", "0")
+
+            // Render LaTeX inside the div using KaTeX
+            const formula = "p_t(x)";
+            katex.render(formula, div.node(), {
+                throwOnError: false
+            });
+        }
+
     }
 
 </script>
+
+<style>
+    .katex {
+        /* background-color: white; */
+    }
+</style>
 
 <div class="marginal-flow-canvas">
     <!-- <canvas id="densityCanvas" bind:this={canvas} width="0" height="0"></canvas> -->

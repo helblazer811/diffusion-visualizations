@@ -7,7 +7,7 @@
         /* width: 100%; */
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
-        padding: 0 300px;
+        padding: 0 200px;
     }
 
     .slider {
@@ -72,6 +72,10 @@
         transform: translateX(-50%);
         font-family: Helvetica, sans-serif;
         color: #7b7b7b;
+    }
+
+    .katex-html {
+        display: none;
     }
 
     .center-label {

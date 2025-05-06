@@ -9,7 +9,7 @@
 
     // Props for the MarginalFlow component
     export let currentTime: number = 0.0; // Default value for the time
-    export let isPlaying: boolean = true; // Flag to indicate if the animation is playing
+    export let isPlaying: boolean = false; // Flag to indicate if the animation is playing
 
     // Local file variables
     const frameRate: number = 45; // Frame rate for the animation
@@ -72,10 +72,10 @@
         const yMin = d3.min(flatAllTimeSamples, d => d[1]);
         const yMax = d3.max(flatAllTimeSamples, d => d[1]);
         domainRange = {
-            xMin: xMin - 0.1 * (xMax - xMin),
-            xMax: xMax + 0.1 * (xMax - xMin),
-            yMin: yMin - 0.1 * (yMax - yMin),
-            yMax: yMax + 0.1 * (yMax - yMin),
+            xMin: xMin - 0.05 * (xMax - xMin),
+            xMax: xMax + 0.05 * (xMax - xMin),
+            yMin: yMin - 0.05 * (yMax - yMin),
+            yMax: yMax + 0.05 * (yMax - yMin),
         }
         console.log("Domain range: ", domainRange);
         // Pull out the first timestep samples
@@ -96,6 +96,12 @@
             clearInterval(interval);
         };
     });
+    
+    // Set up something to react when current Time changes to update the current distribution samples
+    $: if (currentTime && allTimeSamples) {
+        // Update the current distribution samples based on the current time
+        currentDistributionSamples = tf.gather(allTimeSamples, Math.floor(currentTime * numTimeSteps));
+    }
 
 </script>
 
