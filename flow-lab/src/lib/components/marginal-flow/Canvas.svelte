@@ -10,6 +10,7 @@
     export let currentDistributionSamples = tf.tensor([]); // Number of samples to generate
     export let canvasWidth: number = 1400; // Width of the canvas
     export let canvasHeight: number = 600; // Height of the canvas
+    const singleTimeCanvasWidth = canvasHeight;
 
     // let canvas: HTMLCanvasElement;
     // let ctx;
@@ -37,13 +38,13 @@
         xMax = xMax + 0.1 * dataWidth;
         yMin = yMin - 0.1 * dataHeight;
         yMax = yMax + 0.1 * dataHeight; 
-        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, canvasHeight]);
-        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, canvasHeight]);
+        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, singleTimeCanvasWidth]);
+        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, singleTimeCanvasWidth]);
 
         const contours = d3.contourDensity()
             .x(d => xScale(d[0]))
             .y(d => yScale(d[1]))
-            .size([canvasHeight, canvasHeight])
+            .size([singleTimeCanvasWidth, singleTimeCanvasWidth])
             .bandwidth(30)
             .thresholds(5)
             (values)
@@ -85,7 +86,9 @@
         // Plot the target distribution
         plotContour(targetDistributionSamples, 0.15, 800);
         // Plot the current distribution
-        plotContour(currentDistributionSamples, 1.0, 400);
+        // First compute the x location based on the current time
+        const xLocation = currentTime * (canvasWidth - singleTimeCanvasWidth);
+        plotContour(currentDistributionSamples, 1.0, xLocation);
     }
 
 </script>

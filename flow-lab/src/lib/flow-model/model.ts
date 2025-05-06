@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs'
 
 export class FlowModel {
     private model: tf.Sequential;
@@ -64,6 +64,7 @@ export class FlowModel {
             let all_step_data: tf.Tensor2D[] = [];
             let x_t: tf.Tensor2D = x_0;
             for (let i = 0; i < num_total_steps - 1; i++) {
+                console.log("Sample timestep: ", i);
                 const t_i = t_steps.slice([i], [1]); // current time
                 const t_i_repeated = tf.tile(t_i, [num_samples]);
                 const t_next = t_steps.slice([i + 1], [1]); // next time
@@ -98,6 +99,7 @@ export function trainFlowModel(
     const optimizer = tf.train.adam(0.01);
     // Run the training loop
     for (let i = 0; i < iterations; i++) {
+        console.log("Iteration: ", i);
         tf.tidy(() => { // Clear memory
             // Sample a batch of target distribution samples from `data`
             const indices = tf.randomUniform([batchSize], 0, data.shape[0], 'int32');

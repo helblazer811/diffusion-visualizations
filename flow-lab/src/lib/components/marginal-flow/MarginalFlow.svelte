@@ -11,11 +11,12 @@
     export let isPlaying: boolean = true; // Flag to indicate if the animation is playing
 
     // Local file variables
-    let numSamples: number = 10000; // Number of samples to generate
-    let hiddenDim: number = 64; // Hidden dimension for the flow model
-    let canvasWidth: number = 1400; // Width of the canvas
-    let canvasHeight: number = 600; // Height of the canvas
-    let numTimeSteps: number = 100; // Number of time steps for the flow model
+    const frameRate: number = 45; // Frame rate for the animation
+    const numSamples: number = 10000; // Number of samples to generate
+    const hiddenDim: number = 64; // Hidden dimension for the flow model
+    const canvasWidth: number = 1400; // Width of the canvas
+    const canvasHeight: number = 600; // Height of the canvas
+    const numTimeSteps: number = 300; // Number of time steps for the flow model
     let flowModelPath: string = '/models/flow_model.json'; // Path to the flow model
     let flowModel: flow.FlowModel; // Flow model object
     let targetDistributionSamples;
@@ -60,24 +61,20 @@
         );
         // Here run simulate the trajectories of the flow model and save all of the timesteps
         console.log("Sampling from the flow model");
-        allTimeSamples = flowModel.sample(10000, numTimeSteps);
+        allTimeSamples = flowModel.sample(numSamples, numTimeSteps);
         // Pull out the first timestep samples
         currentDistributionSamples = tf.gather(allTimeSamples, 0); // shape [num_samples, dim]
-        console.log('Current distribution samples: ', currentDistributionSamples);
         // Set up an interval to increase the timer periodically
         const interval = setInterval(() => {
             if (isPlaying) {
-                currentTime += 0.01;
+                currentTime += 1.0 / numTimeSteps; // Increment the time in the flow sense. 
                 if (currentTime > 1) {
                     currentTime = 0;
                 }
-                // For now draw amples at a fixed timestep 0.5 
-                // console.log("Drawing samples at time: ", currentTime);
-                // currentDistributionSamples = flowModel.sample(numSamples, 95, 100);
                 // Update the current distribution samples based on the current time
                 currentDistributionSamples = tf.gather(allTimeSamples, Math.floor(currentTime * numTimeSteps));
             }
-        }, 100);
+        }, 1000 / frameRate); // 1000 ms / frameRate = interval in ms
         // Clear the interval when the component is destroyed
         return () => {
             clearInterval(interval);
