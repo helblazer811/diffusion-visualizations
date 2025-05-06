@@ -75,14 +75,14 @@ export function sampleGaussianMixture(
     console.log(tf.getBackend());
     // Return a mixture of 3 Gaussian distributions spaced out like a triangle
     const means = [
-        tf.tensor([-4, 0]),
-        tf.tensor([4, 0]),
-        tf.tensor([0, 6.92])
+        tf.tensor([0, 4 / Math.sqrt(3)]),
+        tf.tensor([-2, -2 / Math.sqrt(3)]),
+        tf.tensor([2, -2 / Math.sqrt(3)])
     ];
     const covs = [
-        tf.tensor([[1.0, 0.0], [0.0, 1.0]]),
-        tf.tensor([[1.0, 0.0], [0.0, 1.0]]),
-        tf.tensor([[1.0, 0.0], [0.0, 1.0]])
+        tf.tensor([[0.5, 0.0], [0.0, 0.5]]),
+        tf.tensor([[0.5, 0.0], [0.0, 0.5]]),
+        tf.tensor([[0.5, 0.0], [0.0, 0.5]])
     ]
 
     const samplesPerComponent = Math.floor(numSamples / means.length);
