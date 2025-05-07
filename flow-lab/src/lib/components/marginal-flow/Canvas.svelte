@@ -67,9 +67,9 @@
         // Plot title above the contour 
         svg.append("text")
             .attr("x", singleTimeCanvasWidth / 2)
-            .attr("y", 70)
+            .attr("y", 50)
             .attr("text-anchor", "middle")
-            .style("font-size", "24px")
+            .style("font-size", "34px")
             .style("font-family", "Helvetica, sans-serif")
             .style("fill", "#7b7b7b")
             .text("Source Distribution");
@@ -78,9 +78,9 @@
         // Plot title above the contour
         svg.append("text")
             .attr("x", 800 + singleTimeCanvasWidth / 2)
-            .attr("y", 70)
+            .attr("y", 50)
             .attr("text-anchor", "middle")
-            .style("font-size", "24px")
+            .style("font-size", "34px")
             .style("font-family", "Helvetica, sans-serif")
             .style("fill", "#7b7b7b")
             .text("Target Distribution");
@@ -94,14 +94,14 @@
             // Create a foreignObject to hold HTML
             const fo = svg.append("foreignObject")
                 .attr("x", xLocation + singleTimeCanvasWidth / 2 - 150)
-                .attr("y", 70 - 52)
+                .attr("y", 50 - 52)
                 .attr("text-anchor", "middle")
                 .attr("width", 300)
                 .attr("height", 100)
                 .style("margin", "0");
 
             const div = fo.append("xhtml:div")
-                .style("font", "24px 'KaTeX_Main', serif")
+                .style("font", "34px 'KaTeX_Main', serif")
                 .style("text-align", "center")
                 .style("line-height", "100px")
                 .style("color", "#7b7b7b")

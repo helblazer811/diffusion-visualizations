@@ -4,12 +4,19 @@
     import * as flow from '$lib/flow-model/model.ts'; // Import the flow model
     import { sampleGaussianMixture, sampleMultivariateNormal } from '$lib/flow-model/helpers.ts'; // Import the utility function
     import { onMount } from 'svelte';
-    import * as tf from '@tensorflow/tfjs';
     import * as d3 from 'd3';
+
+    import * as tf from '@tensorflow/tfjs';
+    // import { env } from '@tensorflow/tfjs-core';
+    import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
+    setWasmPaths('/tfjs-backend-wasm/');
+
+    import '@tensorflow/tfjs-backend-wasm'; // Import the WebGL backend for TensorFlow.js
+
 
     // Props for the MarginalFlow component
     export let currentTime: number = 0.0; // Default value for the time
-    export let isPlaying: boolean = false; // Flag to indicate if the animation is playing
+    export let isPlaying: boolean = true; // Flag to indicate if the animation is playing
 
     // Local file variables
     const frameRate: number = 45; // Frame rate for the animation
@@ -28,6 +35,9 @@
 
     // Load up the cached flow model 
     onMount(async () => {
+        // Set up tfjs to use the WebGL backend
+        await tf.setBackend('wasm');
+        await tf.ready();
         // Load or train and load the flow model. 
         // flow.loadFlowModel(flowModelPath).then((model) => {
         //     if (model) {
@@ -72,10 +82,10 @@
         const yMin = d3.min(flatAllTimeSamples, d => d[1]);
         const yMax = d3.max(flatAllTimeSamples, d => d[1]);
         domainRange = {
-            xMin: xMin - 0.02 * (xMax - xMin),
-            xMax: xMax + 0.02 * (xMax - xMin),
-            yMin: yMin - 0.02 * (yMax - yMin),
-            yMax: yMax + 0.02 * (yMax - yMin),
+            xMin: xMin - 0.01 * (xMax - xMin),
+            xMax: xMax + 0.01 * (xMax - xMin),
+            yMin: yMin - 0.01 * (yMax - yMin),
+            yMax: yMax + 0.01 * (yMax - yMin),
         }
         console.log("Domain range: ", domainRange);
         // Pull out the first timestep samples

@@ -63,7 +63,6 @@ export class FlowModel {
             // Simulate the ODE until timestep t for all samples
             let all_step_data: tf.Tensor2D[] = [];
             // Store the initial sample
-            all_step_data.push(x_0);
             let x_t: tf.Tensor2D = x_0;
             for (let i = 0; i < num_total_steps; i++) {
                 console.log("Sample timestep: ", i);
@@ -76,8 +75,6 @@ export class FlowModel {
                 // Store the result in the all_step_data tensor
                 all_step_data.push(x_t)
             }
-            // Drop the last element 
-            all_step_data.pop();
             // Return all samples
             return tf.stack(all_step_data);
         });

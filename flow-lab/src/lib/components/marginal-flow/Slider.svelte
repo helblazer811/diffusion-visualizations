@@ -60,7 +60,7 @@
     .tick {
         position: absolute;
         top: 0;
-        width: 2px;
+        width: 3px;
         height: 12px;
         background-color: #7b7b7b;
     }
@@ -68,25 +68,12 @@
     .tick-label {
         position: absolute;
         top: 15px;
-        font-size: 1.2em;
+        font-size: 2.0em;
         transform: translateX(-50%);
         font-family: Helvetica, sans-serif;
         color: #7b7b7b;
     }
 
-    .katex-html {
-        display: none;
-    }
-
-    .center-label {
-        position: absolute;
-        left: 50%;
-        top: 0;
-        transform: translateX(-50%);
-        /* Change font to helvetica */
-        font-family: Helvetica, sans-serif;
-        color:rgb(82, 82, 82);
-    }
 </style>
 
 <div class="marginal-flow-slider">
@@ -114,7 +101,7 @@
         >
             1
         </div>
-        <div class="tick-label" style="left: 49%; font-size: 1.2em;">
+        <div class="tick-label" style="left: 49%;">
             Time
         </div>
     </div>

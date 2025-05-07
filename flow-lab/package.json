@@ -9,7 +9,8 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"postinstall": "cp -r node_modules/@tensorflow/tfjs-backend-wasm/dist/*.wasm static/tfjs-backend-wasm/"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
@@ -22,8 +23,15 @@
 	},
 	"dependencies": {
 		"@tensorflow/tfjs": "^4.22.0",
+		"@tensorflow/tfjs-backend-wasm": "^4.22.0",
+		"@tensorflow/tfjs-core": "^4.22.0",
+		"@tensorflow/tfjs-node": "^4.22.0",
+		"aws-sdk": "^2.1692.0",
 		"d3": "^7.9.0",
+		"katex": "^0.16.22",
+		"mock-aws-s3": "^4.0.2",
 		"multivariate-normal": "^0.1.2",
+		"nock": "^14.0.4",
 		"numeric": "^1.2.6"
 	}
 }
