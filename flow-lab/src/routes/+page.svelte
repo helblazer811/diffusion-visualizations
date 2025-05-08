@@ -1,29 +1,46 @@
 <script>
-    import MarginalFlow from '$lib/components/marginal-flow/MarginalFlow.svelte';
+    // import Canvas from '$lib/components/Canvas.svelte';
 </script>
 
 <style>
-    .heading {
-        text-align: center;
-        margin: 0 auto; /* Center the div horizontally */
-        color: #494949;
-        font-family: Helvetica, sans-serif;
+    .sub-title-container {
+        height: 70px;
+        width: 100%;
+        background-color: var(--dark-blue);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* max-width: var(--inner-component-width); */
+        margin: 0 auto;
     }
 
-    .heading h1 {
-        font-size: 4em;
-        margin: 10px;
+    .sub-title-inner-container {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: var(--inner-component-width);
     }
 
-    .heading h2 {
-        font-size: 2.5em;
+    .sub-title {
         margin: 0;
+        font-size: 1.5em;
+        color: white;
+        font-family: var(--heading-font);
+        font-weight: 200; /* Thin font */
     }
 
 </style>
 
-<div class="heading">
-    <h1>Flow Matching</h1>
-    <h2>The Evolution of the Marginal Probability Path</h2>
+<div class="container">
+    <div class="sub-title-container">
+        <div class="sub-title-inner-container">
+            <h1 class="sub-title">Learn about diffusion and flow based generative models with interactive visualization. </h1>
+        </div>
+    </div>
+    <!-- <TrainingBar /> -->
+    <div class="main-area">
+        <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
+        <!-- <Canvas />  Canvas to the d3 animations like the flows, trajectories, source and target distribution -->
+        <!-- <DatasetMenu />  Dataset selector menu to choose the dataset to train on -->
+    </div>
 </div>
-<MarginalFlow />
