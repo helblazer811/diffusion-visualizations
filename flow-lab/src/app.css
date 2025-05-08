@@ -1,10 +1,11 @@
 /* Store global styles here */
 :root {
-    --inner-component-width: 1400px;
+    --inner-component-width: 1600px;
     --dark-blue: #305886;
-    --heading-font: 'Inter', sans-serif;
+    --light-gray: #eaeaea;
+    --font-family: 'Inter', sans-serif;
+    --text-color: #555555;
 }
-
 
 body {
     margin: 0;

@@ -123,6 +123,12 @@
     .katex {
         /* background-color: white; */
     }
+
+    .marginal-flow-canvas {
+        width: 100%;
+        height: 100%;
+        background-color: var(--light-gray);
+    }
 </style>
 
 <div class="marginal-flow-canvas">
