@@ -1,7 +1,5 @@
-<script lang="ts">
-    export let value: number;
-    export let enabled: boolean = true; // Used to toggle on and off the slider when the app is training
-    export let hidden: boolean = false; 
+<script>
+    import { UIState } from '$lib/state';
 </script>
 
 <style>
@@ -86,7 +84,7 @@
         step="0.01"
         list="ticks"
         class="slider"
-        bind:value
+        bind:value={$UIState.currentTime}
     />
     <div class="tick-container">
         <div class="tick" style="left: 1%;"></div>
