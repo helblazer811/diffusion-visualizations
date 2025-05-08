@@ -1,6 +1,48 @@
 <script>
+    import * as tf from '@tensorflow/tfjs';
+    import { onMount } from 'svelte';
+    // Load up the application config
+    import { pretrainedModelPaths, modelTypeToModelClass, modelConfig, datasetNameToPath, trainingConfig} from '$lib/config';
+    // Load up the application state
+    import { UIState, model } from '$lib/state';
+    // Load up the components
+    import TimeSlider from '$lib/components/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
-    // import Canvas from '$lib/components/Canvas.svelte';
+    import DistributionCanvas from '$lib/components/DistributionCanvas.svelte';
+
+    onMount(async () => {
+        // Load up the default cached model
+        // const defaultModelType = UIState.get("modelType");
+        // const defaultModelPath = pretrainedModelPaths[defaultModelType];
+        // Train default model type
+        const defaultModelType = $UIState.modelType;
+        const modelClass = modelTypeToModelClass[defaultModelType];
+        // Initialize the model
+        const ourModel = new modelClass(
+            modelConfig[defaultModelType]["dim"],
+            modelConfig[defaultModelType]["hidden"],
+        );
+        // Load up the chosen training dataset points as tf tensor
+        const trainingDatasetPath = datasetNameToPath[$UIState.datasetName];
+        const response = await fetch(trainingDatasetPath);
+        const data = await response.json();
+        const pointsTensor = tf.tensor(data.points); // Convert the data to a tensor
+        // Train the model
+        ourModel.train(
+            pointsTensor,
+            trainingConfig["iterations"],
+            trainingConfig["batchSize"],
+        ).then(() => {
+            console.log('Model trained successfully');
+            // Save the model into the model store
+            model.set(ourModel);
+            // Save the model to the specified path
+            // model.save(defaultModelPath);
+        }).catch((error) => {
+            console.error('Error training the model:', error);
+        });
+    });
+
 </script>
 
 <style>
@@ -46,7 +88,8 @@
     <TrainingBar />
     <div class="main-area">
         <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
-        <!-- <Canvas />  Canvas to the d3 animations like the flows, trajectories, source and target distribution -->
+        <DistributionCanvas />  
+        <TimeSlider /> 
         <!-- <DatasetMenu />  Dataset selector menu to choose the dataset to train on -->
     </div>
 </div>

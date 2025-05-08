@@ -1,9 +1,6 @@
 <script>
     import HyperparameterSelect from '$lib/components/HyperparameterSelect.svelte';
-    import { config } from '$lib/config';
-
-    $: hyperparameterMenuConfig = $config.hyperparameterMenuConfig;
-    console.log('Hyperparameter Menu Config:', hyperparameterMenuConfig);
+    import { hyperparameterMenuConfig } from '$lib/config';
 
 </script>
 
@@ -42,7 +39,7 @@
     <div class="training-bar-inner-container">
         <p class="title"><b>Diffusion</b>Lab</p>
         <div class="hyperparameter-menu">
-            {#each hyperparameterMenuConfig as entry}
+            {#each Object.entries(hyperparameterMenuConfig) as [name, entry]}
                 <HyperparameterSelect entry={entry} />
             {/each}
         </div>

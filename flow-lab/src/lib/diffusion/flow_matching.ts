@@ -1,17 +1,52 @@
 import * as tf from '@tensorflow/tfjs'
+import { Model } from './model';
 
-export class FlowModel {
-    private model: tf.Sequential;
-    private dim: number;
+export class FlowModel extends Model {
   
     constructor(dim: number = 2, hidden: number = 64) {
-      this.dim = dim;
-  
-      this.model = tf.sequential();
-      this.model.add(tf.layers.dense({ inputShape: [dim + 1], units: hidden, activation: 'elu' }));
-      this.model.add(tf.layers.dense({ units: hidden, activation: 'elu' }));
-      this.model.add(tf.layers.dense({ units: hidden, activation: 'elu' }));
-      this.model.add(tf.layers.dense({ units: dim }));
+        super(dim, hidden);
+    }
+
+    /**
+     * Train the flow model using the flow matching objective 
+     * @param data tf.Tensor2D of shape [num_samples, dim]
+     * @param iterations number of iterations to train the model
+     * @param batchSize number of samples to use in each batch
+     * @returns Promise<void>
+     */
+    async train(
+        data: tf.Tensor2D,
+        iterations: number = 10000,
+        batchSize: number = 32
+    ): Promise<void> {
+        // Run training
+        // Set up the loss
+        const lossFn = (pred: tf.Tensor, target: tf.Tensor) => {
+            return tf.losses.meanSquaredError(target, pred);
+        };
+        // Set up optimizer
+        const optimizer = tf.train.adam(0.01);
+        // Run the training loop
+        for (let i = 0; i < iterations; i++) {
+            tf.tidy(() => { // Clear memory
+                // Sample a batch of target distribution samples from `data`
+                const indices = tf.randomUniform([batchSize], 0, data.shape[0], 'int32');
+                const x_1 = tf.gather(data, indices); // sampled data
+                // Sample a batch of `batch_size` timesteps in [0, 1]
+                const t = tf.randomUniform([batchSize, 1]);
+                // Sample a batch of `batch_size` random noise
+                const x_0 = tf.randomNormal([batchSize, this.dim]);
+                // Compute the x_t interpolation x_t = (1 - t) * x_0 + t * x_1
+                const x_t = x_0.mul(tf.sub(1, t)).add(x_1.mul(t));
+                const dx_t = x_1.sub(x_0) // dx_t = x_1 - x_0
+                // Run the optimizer with the mse loss
+                optimizer.minimize(() => {
+                    const pred = this.forward(x_t, t);
+                    const loss = lossFn(pred, dx_t);
+                    return loss;
+                });
+            });
+        }
     }
   
     /**
@@ -65,7 +100,6 @@ export class FlowModel {
             // Store the initial sample
             let x_t: tf.Tensor2D = x_0;
             for (let i = 0; i < num_total_steps; i++) {
-                console.log("Sample timestep: ", i);
                 const t_i = t_steps.slice([i], [1]); // current time
                 const t_i_repeated = tf.tile(t_i, [num_samples]);
                 const t_next = t_steps.slice([i + 1], [1]); // next time
@@ -81,47 +115,6 @@ export class FlowModel {
     }
 }
 
-export function trainFlowModel(
-    data: tf.Tensor2D,
-    dim: number = 2,
-    hidden: number = 64,
-    iterations: number = 10000,
-    batchSize: number = 32
-){
-    // Initialize the flow model network
-    const flow = new FlowModel(dim, hidden);
-    // Run training
-    // Set up the loss
-    const lossFn = (pred: tf.Tensor, target: tf.Tensor) => {
-        return tf.losses.meanSquaredError(target, pred);
-    };
-    // Set up optimizer
-    const optimizer = tf.train.adam(0.01);
-    // Run the training loop
-    for (let i = 0; i < iterations; i++) {
-        console.log("Iteration: ", i);
-        tf.tidy(() => { // Clear memory
-            // Sample a batch of target distribution samples from `data`
-            const indices = tf.randomUniform([batchSize], 0, data.shape[0], 'int32');
-            const x_1 = tf.gather(data, indices); // sampled data
-            // Sample a batch of `batch_size` timesteps in [0, 1]
-            const t = tf.randomUniform([batchSize, 1]);
-            // Sample a batch of `batch_size` random noise
-            const x_0 = tf.randomNormal([batchSize, dim]);
-            // Compute the x_t interpolation x_t = (1 - t) * x_0 + t * x_1
-            const x_t = x_0.mul(tf.sub(1, t)).add(x_1.mul(t));
-            const dx_t = x_1.sub(x_0) // dx_t = x_1 - x_0
-            // Run the optimizer with the mse loss
-            optimizer.minimize(() => {
-                const pred = flow.forward(x_t, t);
-                const loss = lossFn(pred, dx_t);
-                return loss;
-            });
-        });
-    }
-
-    return flow;
-}
 
 // export function loadFlowModel(path: string) {
 //     let fileExists = false;

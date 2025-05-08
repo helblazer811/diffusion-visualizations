@@ -57,6 +57,33 @@
             .attr("transform", `translate(${xLocation}, 0)`) // Apply translation
     }
 
+    function displayLatex(
+        formula: string,
+        xLocation: number,
+        yLocation: number,
+    ) {
+        // Create a foreignObject to hold HTML
+        const fo = d3.select(svgElement).append("foreignObject")
+            .attr("x", xLocation)
+            .attr("y", yLocation)
+            .attr("width", 300)
+            .attr("height", 100)
+            .style("margin", "0");
+
+        const div = fo.append("xhtml:div")
+            .style("font", "34px 'KaTeX_Main', serif")
+            .style("text-align", "center")
+            .style("line-height", "100px")
+            .style("color", "#7b7b7b")
+            .style("border-radius", "5px")
+            .style("margin", "0")
+
+        // Render LaTeX inside the div using KaTeX
+        katex.render(formula, div.node(), {
+            throwOnError: false
+        });
+    }
+
     // Run the plot contour if targetDistributionSamples changes
     $: if (targetDistributionSamples && svgElement || currentDistributionSamples && svgElement) {
         // Clear existing contours
@@ -92,27 +119,7 @@
         // Only show if the x location is not overlapping with source or target
         if (xLocation > 150 && xLocation < canvasWidth - singleTimeCanvasWidth - 150) {
             // Create a foreignObject to hold HTML
-            const fo = svg.append("foreignObject")
-                .attr("x", xLocation + singleTimeCanvasWidth / 2 - 150)
-                .attr("y", 50 - 52)
-                .attr("text-anchor", "middle")
-                .attr("width", 300)
-                .attr("height", 100)
-                .style("margin", "0");
-
-            const div = fo.append("xhtml:div")
-                .style("font", "34px 'KaTeX_Main', serif")
-                .style("text-align", "center")
-                .style("line-height", "100px")
-                .style("color", "#7b7b7b")
-                .style("border-radius", "5px")
-                .style("margin", "0")
-
-            // Render LaTeX inside the div using KaTeX
-            const formula = "p_t(x)";
-            katex.render(formula, div.node(), {
-                throwOnError: false
-            });
+            displayLatex("p_t(x)", xLocation + singleTimeCanvasWidth / 2 - 150, 50 - 52);
         }
 
     }
@@ -131,7 +138,7 @@
     }
 </style>
 
-<div class="marginal-flow-canvas">
+<div class="canvas">
     <!-- <canvas id="densityCanvas" bind:this={canvas} width="0" height="0"></canvas> -->
     <svg bind:this={svgElement} width={canvasWidth} height={canvasHeight}></svg>   
 </div>
