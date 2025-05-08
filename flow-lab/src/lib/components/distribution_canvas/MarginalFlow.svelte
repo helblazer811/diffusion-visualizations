@@ -1,8 +1,7 @@
 <script lang="ts">
     import Slider from '$lib/components/marginal-flow/Slider.svelte';
     import Canvas from '$lib/components/marginal-flow/Canvas.svelte';
-    import * as flow from '$lib/flow-model/model.ts'; // Import the flow model
-    import { sampleGaussianMixture, sampleMultivariateNormal } from '$lib/flow-model/helpers.ts'; // Import the utility function
+    import { sampleGaussianMixture, sampleMultivariateNormal } from '$lib/diffusion/utils.ts';
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
 

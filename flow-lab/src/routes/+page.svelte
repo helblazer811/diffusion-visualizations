@@ -8,7 +8,7 @@
     // Load up the components
     import TimeSlider from '$lib/components/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
-    import DistributionCanvas from '$lib/components/DistributionCanvas.svelte';
+    import DistributionCanvas from '$lib/components/distribution_canvas/DistributionCanvas.svelte';
 
     onMount(async () => {
         // Load up the default cached model

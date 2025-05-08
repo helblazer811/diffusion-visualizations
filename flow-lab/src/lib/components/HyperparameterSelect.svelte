@@ -6,10 +6,9 @@
     .control {
         flex-grow: 1;
         max-width: 250px;
-        min-width: 110px;
+        min-width: 180px;
         margin-left: 30px;
         margin-top: 6px;
-        min-width: 180px;
     }
 
     .control label {
@@ -20,15 +19,19 @@
         font-weight: 300;
         font-family: var(--font-family);
     }
-
+    /* 
     .control .value {
         font-size: 24px;
         margin: 0;
         font-weight: 300;
     }
+    */
+    .control .select {
+        position: relative;
+    }
 
     .control select {
-        position: relative;
+        width: 100%;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
@@ -37,21 +40,24 @@
         border: none;
         border-radius: 0;
         padding: 6px 0;
-        width: 100%;
         font-size: 18px;
         border-bottom: solid 1px #ccc;
         color: #333;
         outline: none;
+        /* margin-right: 30px; */
+        /* padding-right: 30px; make space for arrow */
     }
 
     .control select:focus {
         border-bottom-color: #183D4E;
     }
 
+    /* Arrow */
     .control .select::after {
+        position: absolute;
+        font-family: 'Material Icons';
         content: "arrow_drop_down";
         color: #999;
-        font-family: 'Material Icons';
         font-weight: normal;
         font-style: normal;
         font-size: 24px;
@@ -62,11 +68,13 @@
         white-space: nowrap;
         word-wrap: normal;
         direction: ltr;
-        position: absolute;
-        right: 0;
+        right: 0px;
         top: 6px;
         pointer-events: none;
+        /* align-self: center;    */
+        /* transform: translateY(-50%); Vertically center the arrow */
     }
+    
 </style>
 
 <div class="control">

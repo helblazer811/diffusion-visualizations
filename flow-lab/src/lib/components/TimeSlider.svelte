@@ -1,9 +1,11 @@
 <script lang="ts">
     export let value: number;
+    export let enabled: boolean = true; // Used to toggle on and off the slider when the app is training
+    export let hidden: boolean = false; 
 </script>
 
 <style>
-    .marginal-flow-slider {
+    .time-slider {
         /* width: 100%; */
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
@@ -76,7 +78,7 @@
 
 </style>
 
-<div class="marginal-flow-slider">
+<div class="time-slider">
     <input 
         type="range" 
         min="0" 
