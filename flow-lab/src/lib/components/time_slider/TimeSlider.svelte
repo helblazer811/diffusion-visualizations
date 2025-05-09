@@ -1,5 +1,13 @@
 <script>
     import { currentTime } from '$lib/state';
+    import PlayButton from '$lib/components/time_slider/PlayButton.svelte';
+
+    let sliderStyle; 
+    // Add dynamic background color based on the current time
+    $: {
+        const fillPercent = $currentTime * 100;
+        sliderStyle = `background: linear-gradient(to right, #4594e3 ${fillPercent}%, #d3d3d3 ${fillPercent}%)`;
+    }
 </script>
 
 <style>
@@ -8,11 +16,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
+        /* margin-top: 20px; */
+        /* padding-left: 40px; */
     }
 
     .time-slider {
         /* width: 100%; */
+        position: relative;
         width: 800px;
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
@@ -22,7 +32,7 @@
     .slider {
         -webkit-appearance: none;
         width: 100%;
-        height: 8px; /* match the thumb size */
+        height: 5px; /* match the thumb size */
         border-radius: 5px;
         background: #d3d3d3;
         outline: none;
@@ -77,22 +87,43 @@
     .tick-label {
         position: absolute;
         top: 15px;
-        font-size: 2.0em;
+        font-size: 1.2em;
         transform: translateX(-50%);
         font-family: Helvetica, sans-serif;
         color: #7b7b7b;
     }
+
+    
+    .play-button-container {
+        /* position: absolute; */
+        padding-right: 10px;
+        left: 0;
+        /* top: 0%; */
+        transform: translateY(-44%);
+        z-index: 1;
+        width: 40px; /* match padding */
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto; /* Ensure button is clickable */
+    }
+
 </style>
 
 <div class="time-slider-container">
+    <div class="play-button-container">
+        <PlayButton />
+    </div>
     <div class="time-slider">
         <input 
             type="range" 
             min="0" 
             max="1" 
-            step="0.01"
+            step="0.001"
             list="ticks"
             class="slider"
+            style={sliderStyle}
             bind:value={$currentTime}
         />
         <div class="tick-container">
@@ -101,18 +132,18 @@
                 class="tick-label" 
                 style="left: 1.2%;"
             >
-                0
+                t=0
             </div>
             <div class="tick" style="left: 99%;"></div>
             <div 
                 class="tick-label" 
                 style="left: 99.1%;"
             >
-                1
+                t=1
             </div>
-            <div class="tick-label" style="left: 49%;">
+            <!-- <div class="tick-label" style="left: 49%;">
                 Time
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

@@ -16,9 +16,10 @@ export const hyperparameterMenuConfig = {
         name: "Number of Steps",
         options: [
             50,
-            100
+            100,
+            1000
         ],
-        default: 50,
+        default: 1000,
     },
     "Sampler": {
         name: "Sampler",
@@ -56,6 +57,7 @@ export const trainingConfig = {
 
 export const datasetNameToPath = {
     "Three Modes": "/datasets/three_modes.json",
+    "Spiral": "/datasets/spiral.json",
 };
 
 export const userInterfaceConfig = {};
@@ -88,3 +90,5 @@ export const UIState = writable({
 
 export const model = writable(null);
 export const currentTime = writable(0);
+export const isPlaying = writable(false);
+export const playbackSpeed = writable(100);

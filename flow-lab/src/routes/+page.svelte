@@ -13,7 +13,7 @@
     // Load up the application state
     import { UIState, model } from '$lib/state';
     // Load up the components
-    import TimeSlider from '$lib/components/TimeSlider.svelte';
+    import TimeSlider from '$lib/components/time_slider/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
     import DistributionCanvas from '$lib/components/distribution_canvas/DistributionCanvas.svelte';
     // Import helper tf functions

@@ -82,7 +82,7 @@
             data={$UIState.currentDistributionSamples}
             xLocation={$currentTime * (interfaceSettings.distributionCanvasWidth - interfaceSettings.distributionWidth)}
             opacity={1.0}
-            label="p_t(x)"
+            label=""
             labelIsLatex={true}
             distributionId="current"
         />
