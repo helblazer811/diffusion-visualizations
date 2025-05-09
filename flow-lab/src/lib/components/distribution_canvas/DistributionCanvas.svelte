@@ -20,8 +20,12 @@
     // If the currentTime changes then update the current distribution samples in the UI state
     $: if ($currentTime) {
         // Convert current time to index
-        const currentTimeIndex = Math.floor($currentTime * $UIState.numberOfSteps);
+        let currentTimeIndex = Math.floor($currentTime * $UIState.numberOfSteps);
         console.log("Current time index: ", currentTimeIndex);
+        // Avoid going out of bounds
+        if (currentTimeIndex >= $UIState.numberOfSteps) {
+            currentTimeIndex = $UIState.numberOfSteps - 1;
+        }
         // Pull out the current time samples from the all time samples
         const currentSamples = tf.tidy(() => $UIState.allTimeSamples.gather(currentTimeIndex));
         console.log("Current samples shape: ", currentSamples.shape);
@@ -76,7 +80,7 @@
         <Distribution
             svgElement={svgElement}
             data={$UIState.currentDistributionSamples}
-            xLocation={400}
+            xLocation={$currentTime * (interfaceSettings.distributionCanvasWidth - interfaceSettings.distributionWidth)}
             opacity={1.0}
             label="p_t(x)"
             labelIsLatex={true}

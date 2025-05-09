@@ -27,6 +27,7 @@
         distributionId: string = "target",
     ) {
         console.log("Plotting contour");
+        console.log(xLocation)
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
         // 2. Build histogram
