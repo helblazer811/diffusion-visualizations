@@ -67,6 +67,7 @@ export const interfaceSettings = {
     distributionHeight: 600,
     distributionCanvasWidth: 1400,
     distributionCanvasHeight: 600,
+    pointColor: "#4594e3",
 }
 
 // Writeable stores for the UI state

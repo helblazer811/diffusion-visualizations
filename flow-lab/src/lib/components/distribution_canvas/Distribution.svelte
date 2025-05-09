@@ -26,8 +26,6 @@
         xLocation: number = 0,
         distributionId: string = "target",
     ) {
-        console.log("Plotting contour");
-        console.log(xLocation)
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
         // 2. Build histogram
@@ -124,7 +122,7 @@
             .attr("x", xLocation)
             .attr("y", yLocation)
             .attr("text-anchor", "middle")
-            .style("font-size", "34px")
+            .style("font-size", "24px")
             .style("font-family", "Helvetica, sans-serif")
             .style("fill", "#7b7b7b")
             .text(text);
@@ -132,7 +130,6 @@
 
     // Update the contour map data if the data changes
     $: if (data && svgElement) {
-        console.log("Distribution id: ", distributionId);
         // Plot the target distribution
         plotContour(data, opacity, xLocation, distributionId);
         // Plot title above the contour

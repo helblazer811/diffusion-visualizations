@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import * as tf from '@tensorflow/tfjs';
     import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
     setWasmPaths('/tfjs-backend-wasm/');
@@ -18,9 +18,29 @@
     import DistributionCanvas from '$lib/components/distribution_canvas/DistributionCanvas.svelte';
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
+    import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
+
+    let datasetDict = {};
+
+    function loadDataset(path: string) {
+        return fetch(path)
+            .then(response => response.json())
+            .then(data => {
+                // Convert the data to a tensor
+                const pointsTensor = tf.tensor(data.points);
+                return pointsTensor;
+            });
+    }
 
     onMount(async () => {
         const readonlyUIState = get(UIState);
+        // Load up each of the datasets
+        for (const [name, path] of Object.entries(datasetNameToPath)) {
+            const pointsTensor = await loadDataset(path);
+            datasetDict = { ...datasetDict, [name]: pointsTensor }; // triggers Svelte reactivity
+            // console.log(`Loaded dataset ${name} from ${path}`);
+            // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
+        }
         // Load up the default cached model
         // const defaultModelType = UIState.get("modelType");
         // const defaultModelPath = pretrainedModelPaths[defaultModelType];
@@ -33,11 +53,7 @@
             modelConfig[defaultModelType]["hidden"],
         );
         // Load up the chosen training dataset points as tf tensor
-        const trainingDatasetPath = datasetNameToPath[readonlyUIState.datasetName];
-        const response = await fetch(trainingDatasetPath);
-        const data = await response.json();
-        const pointsTensor = tf.tensor(data.points); // Convert the data to a tensor
-        console.log('Training dataset shape: ', pointsTensor.shape);
+        const pointsTensor = datasetDict[readonlyUIState.datasetName];
         // Update the UI state with the training dataset
         UIState.update(state => ({
             ...state,
@@ -135,7 +151,30 @@
 
     .main-area {
         background-color: var(--light-gray);
-        height: 800px;
+        height: 680px;
+        display: flex;
+    }
+
+    .main-area-left {
+        /* width: 20%; */
+        flex: 1;
+        background-color: var(--light-gray);
+    }
+
+    .main-area-center {
+        width: 1400px;
+    }
+
+    .main-area-right {
+        flex: 1;
+        background-color: var(--light-gray);
+
+        display: flex;
+        flex-direction: column;
+        align-items: left;      /* Center items vertically */
+        justify-content: center;
+        gap: 20px;                /* Add space between items */
+        padding-bottom: 100px;
     }
 
 </style>
@@ -149,8 +188,18 @@
     <TrainingBar />
     <div class="main-area">
         <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
-        <DistributionCanvas />  
-        <TimeSlider /> 
+        <div class="main-area-left">
+
+        </div>
+        <div class="main-area-center">
+            <DistributionCanvas />  
+            <TimeSlider /> 
+        </div>
+        <div class="main-area-right">
+            {#each Object.entries(datasetDict) as [name, data]}
+                <MiniDistribution data={data} distributionId={name}/>
+            {/each}
+        </div>
         <!-- <DatasetMenu />  Dataset selector menu to choose the dataset to train on -->
     </div>
 </div>

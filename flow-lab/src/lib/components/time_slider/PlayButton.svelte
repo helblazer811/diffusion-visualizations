@@ -14,13 +14,10 @@
     $ : if ($isPlaying) {
         // Always clear existing interval before creating a new one
         clearInterval(interval);
-        console.log("Play button clicked");
-        console.log(1000 / $playbackSpeed);
         interval = setInterval(() => {
             if ($isPlaying) {
                 // Update currentTime based on playbackSpeed
                 let nextTime = $currentTime + 1 / $UIState.numberOfSteps;
-                console.log("Next time: ", nextTime);
                 // If nextTime is greater than 1, reset it to 1
                 if (nextTime > 1) {
                     nextTime = 1;

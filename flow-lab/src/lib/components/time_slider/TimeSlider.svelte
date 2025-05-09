@@ -22,7 +22,7 @@
 
     .time-slider {
         /* width: 100%; */
-        position: relative;
+        /* position: relative; */
         width: 800px;
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
@@ -30,33 +30,32 @@
     }
 
     .slider {
-        -webkit-appearance: none;
+        -webkit-appearance: none; /* Remove default styling */
+        appearance: none;
         width: 100%;
-        height: 5px; /* match the thumb size */
+        height: 5px;
+        background: #4594e3;
         border-radius: 5px;
-        background: #d3d3d3;
         outline: none;
-        display: block;       /* ensure block display */
-        margin: 0 auto;       /* center horizontally */
-        position: relative;   /* helps with alignment */
-        top: 0;               /* reset any browser default offset */
     }
 
+    /* Chrome, Safari, Edge */
     .slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
+        width: 12px;
+        height: 12px;
         background: #4594e3;
+        border-radius: 50%;
         cursor: pointer;
     }
 
+    /* Firefox */
     .slider::-moz-range-thumb {
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
+        width: 12px;
+        height: 12px;
         background: #4594e3;
+        border-radius: 50%;
         cursor: pointer;
     }
 
@@ -79,7 +78,7 @@
     .tick {
         position: absolute;
         top: 0;
-        width: 3px;
+        width: 2px;
         height: 12px;
         background-color: #7b7b7b;
     }
@@ -93,13 +92,11 @@
         color: #7b7b7b;
     }
 
-    
     .play-button-container {
         /* position: absolute; */
         padding-right: 10px;
         left: 0;
-        /* top: 0%; */
-        transform: translateY(-44%);
+        transform: translateY(-22%);
         z-index: 1;
         width: 40px; /* match padding */
         height: 40px;
@@ -130,14 +127,14 @@
             <div class="tick" style="left: 1%;"></div>
             <div 
                 class="tick-label" 
-                style="left: 1.2%;"
+                style="left: 1%;"
             >
                 t=0
             </div>
             <div class="tick" style="left: 99%;"></div>
             <div 
                 class="tick-label" 
-                style="left: 99.1%;"
+                style="left: 99%;"
             >
                 t=1
             </div>
