@@ -1,10 +1,90 @@
 import { writable } from 'svelte/store';
-import { hyperparameterMenuConfig } from './config';
+import { FlowModel } from '$lib/diffusion/flow_matching';
+
+// Default values various parts of the UI
+
+export const hyperparameterMenuConfig = {
+    "Training Objective": {
+        name: "Training Objective",
+        options: [
+            "Flow Matching",
+            "Diffusion"
+        ],
+        default: "Flow Matching",
+    },
+    "Number of Steps": {
+        name: "Number of Steps",
+        options: [
+            50,
+            100
+        ],
+        default: 50,
+    },
+    "Sampler": {
+        name: "Sampler",
+        options: [
+            "Euler",
+        ],
+        default: "Euler",
+    }
+};
+
+export const pretrainedModelPaths = {
+    "Flow Matching": "/models/flow_matching_model.json",
+    "Diffusion": "/models/diffusion_model.json",
+}
+
+export const modelTypeToModelClass = {
+    "Flow Matching": FlowModel
+};
+
+export const modelConfig = {
+    "Flow Matching": {
+        dim: 2,
+        hidden: 64,
+    },
+    "Diffusion": {
+        dim: 2,
+        hidden: 64,
+    }
+};
+
+export const trainingConfig = {
+    iterations: 1000,
+    batchSize: 256,
+}
+
+export const datasetNameToPath = {
+    "Three Modes": "/datasets/three_modes.json",
+};
+
+export const userInterfaceConfig = {};
+
+export const interfaceSettings = {
+    distributionWidth: 600,
+    distributionHeight: 600,
+    distributionCanvasWidth: 1400,
+    distributionCanvasHeight: 600,
+}
+
+// Writeable stores for the UI state
 
 export const UIState = writable({
     modelType: hyperparameterMenuConfig["Training Objective"].default,
+    numberOfSteps: hyperparameterMenuConfig["Number of Steps"].default,
     datasetName: "Three Modes", // Default dataset name
-    currentTime: 0,
+    numSamples: 2000, // Number of samples to generate
+    sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution
+    targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
+    currentDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the current distribution
+    allTimeSamples: undefined, // This holds a tensorflow tensor contianing samples from multiple timesteps
+    domainRange: {
+        xMin: -3,
+        xMax: 3,
+        yMin: -3,
+        yMax: 3,
+    }
 });
 
 export const model = writable(null);
+export const currentTime = writable(0);

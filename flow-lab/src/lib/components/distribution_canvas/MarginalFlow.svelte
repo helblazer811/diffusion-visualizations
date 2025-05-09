@@ -1,17 +1,15 @@
 <script lang="ts">
+    import * as d3 from 'd3';
+
+    import * as tf from '@tensorflow/tfjs';
+    import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
+    setWasmPaths('/tfjs-backend-wasm/');
+    import '@tensorflow/tfjs-backend-wasm'; // Import the WebGL backend for TensorFlow.js
+
     import Slider from '$lib/components/marginal-flow/Slider.svelte';
     import Canvas from '$lib/components/marginal-flow/Canvas.svelte';
     import { sampleGaussianMixture, sampleMultivariateNormal } from '$lib/diffusion/utils.ts';
     import { onMount } from 'svelte';
-    import * as d3 from 'd3';
-
-    import * as tf from '@tensorflow/tfjs';
-    // import { env } from '@tensorflow/tfjs-core';
-    import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
-    setWasmPaths('/tfjs-backend-wasm/');
-
-    import '@tensorflow/tfjs-backend-wasm'; // Import the WebGL backend for TensorFlow.js
-
 
     // Props for the MarginalFlow component
     export let currentTime: number = 0.0; // Default value for the time
@@ -24,7 +22,6 @@
     const canvasWidth: number = 1400; // Width of the canvas
     const canvasHeight: number = 600; // Height of the canvas
     const numTimeSteps: number = 300; // Number of time steps for the flow model
-    let flowModelPath: string = '/models/flow_model.json'; // Path to the flow model
     let flowModel: flow.FlowModel; // Flow model object
     let targetDistributionSamples: tf.Tensor; // Target distribution samples
     let sourceDistributionSamples: tf.Tensor; // Source distribution samples

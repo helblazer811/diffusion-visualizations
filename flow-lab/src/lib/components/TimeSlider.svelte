@@ -1,13 +1,22 @@
 <script>
-    import { UIState } from '$lib/state';
+    import { currentTime } from '$lib/state';
 </script>
 
 <style>
+    .time-slider-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
     .time-slider {
         /* width: 100%; */
+        width: 800px;
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
-        padding: 0 200px;
+        /* padding: 0 200px; */
     }
 
     .slider {
@@ -73,36 +82,37 @@
         font-family: Helvetica, sans-serif;
         color: #7b7b7b;
     }
-
 </style>
 
-<div class="time-slider">
-    <input 
-        type="range" 
-        min="0" 
-        max="1" 
-        step="0.01"
-        list="ticks"
-        class="slider"
-        bind:value={$UIState.currentTime}
-    />
-    <div class="tick-container">
-        <div class="tick" style="left: 1%;"></div>
-        <div 
-            class="tick-label" 
-            style="left: 1.2%;"
-        >
-            0
-        </div>
-        <div class="tick" style="left: 99%;"></div>
-        <div 
-            class="tick-label" 
-            style="left: 99.1%;"
-        >
-            1
-        </div>
-        <div class="tick-label" style="left: 49%;">
-            Time
+<div class="time-slider-container">
+    <div class="time-slider">
+        <input 
+            type="range" 
+            min="0" 
+            max="1" 
+            step="0.01"
+            list="ticks"
+            class="slider"
+            bind:value={$currentTime}
+        />
+        <div class="tick-container">
+            <div class="tick" style="left: 1%;"></div>
+            <div 
+                class="tick-label" 
+                style="left: 1.2%;"
+            >
+                0
+            </div>
+            <div class="tick" style="left: 99%;"></div>
+            <div 
+                class="tick-label" 
+                style="left: 99.1%;"
+            >
+                1
+            </div>
+            <div class="tick-label" style="left: 49%;">
+                Time
+            </div>
         </div>
     </div>
 </div>

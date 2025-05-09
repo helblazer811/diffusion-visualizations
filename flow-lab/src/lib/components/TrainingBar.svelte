@@ -1,6 +1,6 @@
 <script>
     import HyperparameterSelect from '$lib/components/HyperparameterSelect.svelte';
-    import { hyperparameterMenuConfig } from '$lib/config';
+    import { hyperparameterMenuConfig } from '$lib/state';
 
 </script>
 

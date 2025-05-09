@@ -1,47 +1,87 @@
 <script>
-    import Distribution from '$lib/components/Distribution.svelte';
-    let svgElement;
-    const singleTimeCanvasWidth = canvasHeight;
+    import * as tf from '@tensorflow/tfjs';
 
-    // If currentTime changes in the UI state then update the current distribution samples
+    import { UIState, currentTime } from '$lib/state';
+    import { interfaceSettings } from '$lib/state';
+
+    import Distribution from '$lib/components/distribution_canvas/Distribution.svelte';
+    let svgElement;
+    // const singleTimeCanvasWidth = canvasHeight;
+    // // If currentTime changes in the UI state then update the current distribution samples in the UI state
+    // $ : {
+    //     if (model) { // If the model is loaded, then we can sample from it
+    //         // Set up web assembly backend for tensorflow.js
+    //         await tf.setBackend('wasm');
+    //         await tf.ready();
+    //         // Draw some samples from the model
+    //         allTimeSamples = flowModel.sample(numSamples, numTimeSteps); // shape [num_time_steps, num_samples, dim]
+    //     }
+    // }
+    // If the currentTime changes then update the current distribution samples in the UI state
+    $: if ($currentTime) {
+        // Convert current time to index
+        const currentTimeIndex = Math.floor($currentTime * $UIState.numberOfSteps);
+        console.log("Current time index: ", currentTimeIndex);
+        // Pull out the current time samples from the all time samples
+        const currentSamples = tf.tidy(() => $UIState.allTimeSamples.gather(currentTimeIndex));
+        console.log("Current samples shape: ", currentSamples.shape);
+        // Update the current distribution samples in the UI state
+        UIState.update(state => ({
+            ...state,
+            currentDistributionSamples: currentSamples
+        }));
+    }
+
+    $: if ($UIState.currentDistributionSamples) {
+        console.log("Current distribution samples: ", $UIState.currentDistributionSamples);
+    }
 
 </script>
+
+<style>
+    .distribution-canvas-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+</style>
   
-  <svg bind:this={svgElement} width={canvasWidth} height={canvasHeight}></svg>
-  
-  {#if svgElement}
-    <Distribution
-        svgElement={svgElement}
-        data={sourceDistributionSamples}
-        xLocation={0}
-        opacity={0.15}
-        label="Source Distribution"
-        domainRange={domainRange}
-        canvasSize={singleTimeCanvasWidth}
-    />
-  
-    <Distribution
-        svgElement={svgElement}
-        data={targetDistributionSamples}
-        xLocation={800}
-        opacity={0.15}
-        label="Target Distribution"
-        domainRange={domainRange}
-        canvasSize={singleTimeCanvasWidth}
-    />
-  
-    {#if currentDistributionSamples}
-        {#if currentTime > 150 / canvasWidth && currentTime < 1 - 150 / canvasWidth}
-            <Distribution
-                svgElement={svgElement}
-                data={currentDistributionSamples}
-                xLocation={currentTime * (canvasWidth - singleTimeCanvasWidth)}
-                opacity={1.0}
-                label="p_t(x)"
-                domainRange={domainRange}
-                canvasSize={singleTimeCanvasWidth}
-            />
-        {/if}
+<div class="distribution-canvas-container">
+    <svg 
+        bind:this={svgElement} 
+        width={interfaceSettings.distributionCanvasWidth} 
+        height={interfaceSettings.distributionCanvasHeight}
+    ></svg>
+    {#if svgElement}
+        <Distribution
+            svgElement={svgElement}
+            data={$UIState.sourceDistributionSamples}
+            xLocation={0}
+            opacity={0.15}
+            label="Source Distribution"
+            distributionId="source"
+        />
+    
+        <Distribution
+            svgElement={svgElement}
+            data={$UIState.targetDistributionSamples}
+            xLocation={800}
+            opacity={0.15}
+            label="Target Distribution"
+            distributionId="target"
+        />
+    
+        <Distribution
+            svgElement={svgElement}
+            data={$UIState.currentDistributionSamples}
+            xLocation={400}
+            opacity={1.0}
+            label="p_t(x)"
+            labelIsLatex={true}
+            distributionId="current"
+        />
     {/if}
-{/if}
   
+</div>
