@@ -1,25 +1,56 @@
 /*
 *    Web worker that runs sampling for a given model. 
 */ 
-// import * as tf from '@tensorflow/tfjs';
+// import { ModelRegistry, ModelType } from '$lib/diffusion/model_registry';
+import { FlowModel } from '$lib/diffusion/flow_matching';
+import * as tf from '@tensorflow/tfjs';
+import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
+setWasmPaths('/tfjs-backend-wasm/');
+import '@tensorflow/tfjs-backend-wasm'; // Import the WebGL backend for TensorFlow.js
 // import '@tensorflow/tfjs-backend-wasm';
 
 // tf.setBackend('wasm').then(() => {
-//   self.postMessage({ status: 'ready' });
+//     self.postMessage({ status: 'ready' });
 // });
+
+const modelTypeToModelClass = {
+    'Flow Matching': FlowModel,
+};
 
 self.onmessage = async (e) => {
     const { type, data } = e.data;
 
     if (type === 'sample') {
+        console.log('Sampling with data:', data);
+        const modelJSONPath = data.modelJSONPath;
+        const modelType = data.modelType;
+        const modelConfig = data.modelConfig;
+        const numberOfSteps = data.numberOfSteps;
+        const numSamples = data.numSamples;
+        // Set up tf wasm backend
+        await tf.setBackend('wasm');
+        await tf.ready();
+        // Load up the model based on the passed model name
+        const ModelClass = modelTypeToModelClass[modelType];
+        const ourModel = new ModelClass(
+            modelConfig.dim,
+            modelConfig.hidden,
+        );
         // Load up a model from the given file path
+        const tfModel = await tf.loadLayersModel(modelJSONPath);
+        // Set the model in the model class
+        ourModel.setModel(tfModel);
         // Run sampling with the model based on data.numberOfSteps and data.numSamples
-        // Return the samples to the main thread
-        console.log("Running sampler worker.")
-        // const input = tf.tensor(data.input);
-        // console.log("Do worker model behavior. ")
-        // // const output = input.square(); // replace with your real model
-        // const result = await output.array();
-        self.postMessage({ type: 'result', data: "result" });
+        const allSamples = ourModel.sample(
+            numSamples,
+            numberOfSteps,
+        ); // shape [num_time_steps, num_samples, dim]
+        // Convert the tensor to a 2D array
+        const allSamplesArray = allSamples.arraySync();
+        // Return the result to the main thread
+        self.postMessage({ 
+            type: 'result', 
+            allSamples: allSamplesArray,
+        });
     }
 };
