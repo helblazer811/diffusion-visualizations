@@ -137,7 +137,3 @@ export class FlowModel extends Model {
 //     // Load the model from the specified path
 //     return tf.loadLayersModel(path);
 // }
-
-export async function downloadFlowModel(model: tf.LayersModel) {
-    await model.save('downloads://flow-model'); // Prompts the user to download it
-}

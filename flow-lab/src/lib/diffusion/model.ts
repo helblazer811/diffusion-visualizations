@@ -17,6 +17,14 @@ export class Model {
         this.model.add(tf.layers.dense({ units: dim }));
     }
 
+    setModel(model: tf.Sequential) {
+        this.model = model;
+    }
+
+    async download() {
+        await this.model.save('downloads://model'); // Prompts the user to download it
+    }
+
     /**
      * Train the model using its respective objective
      * @param data tf.Tensor2D of shape [num_samples, dim]

@@ -29,6 +29,7 @@
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
     import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
+    import { FlowModel } from '$lib/diffusion/flow_matching';
 
     let datasetDict = {};
 
@@ -42,6 +43,46 @@
             });
     }
 
+    async function loadModel(modelJSONPath: string) {
+        const model = await tf.loadLayersModel(modelJSONPath);
+        return model;
+    }
+
+    /**
+     * Draw samples from the model and update the UI state with the samples
+     * @param model The model to sample from
+     */
+    async function drawSamples(
+        model,
+        numSamples: number,
+        numberOfSteps: number = 1000,
+    ) {
+        // Sample from the model
+        const allSamples = model.sample(
+            numSamples,
+            numberOfSteps,
+        ); // shape [num_time_steps, num_samples, dim]
+        // Update the UI state with the all time samples
+        allTimeSamples.set(allSamples);
+        // Compute the range of the points to use for the domain of each contour map
+        let flatAllTimeSamples = tf.reshape(allSamples, [numSamples * UIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
+        flatAllTimeSamples = flatAllTimeSamples.arraySync();
+        const xMin = d3.min(flatAllTimeSamples, d => d[0]);
+        const xMax = d3.max(flatAllTimeSamples, d => d[0]);
+        const yMin = d3.min(flatAllTimeSamples, d => d[1]);
+        const yMax = d3.max(flatAllTimeSamples, d => d[1]);
+        const domainRange = {
+            xMin: xMin - 0.01 * (xMax - xMin),
+            xMax: xMax + 0.01 * (xMax - xMin),
+            yMin: yMin - 0.01 * (yMax - yMin),
+            yMax: yMax + 0.01 * (yMax - yMin),
+        };
+        UIState.update(state => ({
+            ...state,
+            domainRange: domainRange,
+        }));
+    }
+
     onMount(async () => {
         const readonlyUIState = get(UIState);
         // Load up each of the datasets
@@ -52,21 +93,30 @@
             // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
         }
         // Load up the default cached model
-        // const defaultModelType = UIState.get("modelType");
-        // const defaultModelPath = pretrainedModelPaths[defaultModelType];
-        // Train default model type
         const defaultModelType = readonlyUIState.modelType;
+        const defaultDataset: string = readonlyUIState.datasetName;
+        const defaultModelPath: string = pretrainedModelPaths[defaultModelType][defaultDataset];
+        console.log("Loading model from: ", defaultModelPath);
+        const tfModel = await loadModel(defaultModelPath); 
+        // Get the model class from the model type
         const modelClass = modelTypeToModelClass[defaultModelType];
         // Initialize the model
         const ourModel = new modelClass(
             modelConfig[defaultModelType]["dim"],
             modelConfig[defaultModelType]["hidden"],
         );
+        // Insert the tf model into the model
+        ourModel.setModel(tfModel);
+        console.log("Model loaded: ", ourModel);
+        // Draw samples with the model
+        drawSamples(ourModel, readonlyUIState.numSamples, readonlyUIState.numberOfSteps);
+        // // Train default model type
+        // const defaultModelType = readonlyUIState.modelType;
         // Load up the chosen training dataset points as tf tensor
         const pointsTensor = datasetDict[readonlyUIState.datasetName];
         // Update the UI state with the training dataset
         targetDistributionSamples.set(pointsTensor);
-        // Draw some gaussian samples to put into the UI state as well
+        // // Draw some gaussian samples to put into the UI state as well
         const multivariateNormalSamples = sampleMultivariateNormal(
             [0, 0],
             [[1, 0], [0, 1]],
@@ -74,49 +124,52 @@
         );
         // Update the UI state with the source distribution samples
         sourceDistributionSamples.set(multivariateNormalSamples);
-        // Train the model
-        console.log('Training model...');
-        ourModel.train(
-            pointsTensor,
-            trainingConfig["iterations"],
-            trainingConfig["batchSize"],
-        ).then(async () => {
-            // Set up tfjs to use the WebGL backend
-            await tf.setBackend('wasm');
-            await tf.ready();
-            console.log('Model trained successfully');
-            // Save the model into the model store
-            model.set(ourModel);
-            // Save the model to the specified path
-            // model.save(defaultModelPath);
-            // Now draw all time samples from the model and put them into the UI state
-            console.log('Sampling from the model...');
-            const allSamples = ourModel.sample(
-                readonlyUIState.numSamples,
-                readonlyUIState.numberOfSteps,
-            ); // shape [num_time_steps, num_samples, dim]
-            // Update the UI state with the all time samples
-            allTimeSamples.set(allSamples);
-            // Compute the range of the points to use for the domain of each contour map
-            let flatAllTimeSamples = tf.reshape(allSamples, [readonlyUIState.numSamples * readonlyUIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
-            flatAllTimeSamples = flatAllTimeSamples.arraySync();
-            const xMin = d3.min(flatAllTimeSamples, d => d[0]);
-            const xMax = d3.max(flatAllTimeSamples, d => d[0]);
-            const yMin = d3.min(flatAllTimeSamples, d => d[1]);
-            const yMax = d3.max(flatAllTimeSamples, d => d[1]);
-            const domainRange = {
-                xMin: xMin - 0.01 * (xMax - xMin),
-                xMax: xMax + 0.01 * (xMax - xMin),
-                yMin: yMin - 0.01 * (yMax - yMin),
-                yMax: yMax + 0.01 * (yMax - yMin),
-            };
-            UIState.update(state => ({
-                ...state,
-                domainRange: domainRange,
-            }));
-        }).catch((error) => {
-            console.error('Error training the model:', error);
-        });
+        // // Load up a model from a file
+        // // Train the model
+        // console.log('Training model...');
+        // ourModel.train(
+        //     pointsTensor,
+        //     trainingConfig["iterations"],
+        //     trainingConfig["batchSize"],
+        // ).then(async () => {
+        //     // Set up tfjs to use the WebGL backend
+        //     await tf.setBackend('wasm');
+        //     await tf.ready();
+        //     console.log('Model trained successfully');
+        //     // Save the model into the model store
+        //     model.set(ourModel);
+        //     // Save the model to the specified path
+        //     // model.save(defaultModelPath);
+        //     // Now draw all time samples from the model and put them into the UI state
+        //     console.log('Sampling from the model...');
+        //     const allSamples = ourModel.sample(
+        //         readonlyUIState.numSamples,
+        //         readonlyUIState.numberOfSteps,
+        //     ); // shape [num_time_steps, num_samples, dim]
+        //     // Update the UI state with the all time samples
+        //     allTimeSamples.set(allSamples);
+        //     // Compute the range of the points to use for the domain of each contour map
+        //     let flatAllTimeSamples = tf.reshape(allSamples, [readonlyUIState.numSamples * readonlyUIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
+        //     flatAllTimeSamples = flatAllTimeSamples.arraySync();
+        //     const xMin = d3.min(flatAllTimeSamples, d => d[0]);
+        //     const xMax = d3.max(flatAllTimeSamples, d => d[0]);
+        //     const yMin = d3.min(flatAllTimeSamples, d => d[1]);
+        //     const yMax = d3.max(flatAllTimeSamples, d => d[1]);
+        //     const domainRange = {
+        //         xMin: xMin - 0.01 * (xMax - xMin),
+        //         xMax: xMax + 0.01 * (xMax - xMin),
+        //         yMin: yMin - 0.01 * (yMax - yMin),
+        //         yMax: yMax + 0.01 * (yMax - yMin),
+        //     };
+        //     UIState.update(state => ({
+        //         ...state,
+        //         domainRange: domainRange,
+        //     }));
+        //     // Download the flow model
+        //     // ourModel.download()
+        // }).catch((error) => {
+        //     console.error('Error training the model:', error);
+        // });
     });
 
 </script>

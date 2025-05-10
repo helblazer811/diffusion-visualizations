@@ -31,8 +31,10 @@ export const hyperparameterMenuConfig = {
 };
 
 export const pretrainedModelPaths = {
-    "Flow Matching": "/models/flow_matching_model.json",
-    "Diffusion": "/models/diffusion_model.json",
+    "Flow Matching": {
+        "Three Modes": "/models/flow_matching_three_modes/model.json",
+    }
+    // "Diffusion": "/models/diffusion_model.json",
 }
 
 export const modelTypeToModelClass = {
