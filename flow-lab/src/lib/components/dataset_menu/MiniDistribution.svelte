@@ -1,17 +1,26 @@
 
 <script lang="ts"> 
     import * as d3 from 'd3';
-    import {interfaceSettings} from '$lib/state';
+    import {interfaceSettings, UIState } from '$lib/state';
 
     export let data; // Data to plot
     export let distributionId = "target"; // ID for the distribution canvas
-    // Replace distributionId spaces with underscores
-    distributionId = distributionId.replace(/\s+/g, '_');
+
+    function handleClick(){
+        console.log("Clicked on distribution: ", distributionId);
+        // Change this dataset to be the current one
+        UIState.update(state => ({
+            ...state,
+            datasetName: distributionId,
+        }));
+    }
 
     async function plotPoints(
         data: tf.Tensor, // Data to plot
         distributionId: string = "target", // ID for the distribution canvas
     ){
+        // Replace distributionId spaces with underscores
+        const replacedDistributionId = distributionId.replace(/\s+/g, '_');
         // Convert data to plain 2d array
         data = await data.arraySync() as number[][];
         // Comptue the range of the data
@@ -32,12 +41,12 @@
         const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, 65]);
         const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, 65]);
         // Make a scatter plot
-        const svg = d3.select("#svg_" + distributionId);
+        const svg = d3.select("#svg_" + replacedDistributionId);
         // Select the group by ID, or create if not exists
         // NOTE: This prevents unwanted recreation of the group
-        let group = svg.select(`#points_`+ distributionId);
+        let group = svg.select(`#points_`+ replacedDistributionId);
         if (group.empty()) {
-            group = svg.append("g").attr("id", "points_" + distributionId);
+            group = svg.append("g").attr("id", "points_" + replacedDistributionId);
         } else {
             group.selectAll("*").remove(); // Clear previous contents of this group
         }
@@ -79,6 +88,6 @@
 
 </style>
 
-<div class="mini-distribution">
+<div class="mini-distribution" on:click={handleClick}>
     <svg id="svg_{distributionId}"></svg>
 </div>

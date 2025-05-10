@@ -123,7 +123,15 @@
 </script>
 
 <style>
-    .sub-title-container {
+    .title {
+        margin: 0;
+        margin-left: 30px;
+        font-size: 3.0em;
+        color: white;
+        font-family: var(--font-family);
+    }
+
+    .title-container {
         height: 70px;
         width: 100%;
         background-color: var(--dark-blue);
@@ -131,22 +139,42 @@
         justify-content: center;
         align-items: center;
         /* max-width: var(--inner-component-width); */
-        margin: 0 auto;
+        /* margin: 0 auto; */
     }
 
-    .sub-title-inner-container {
+    .title-left {
+        flex: 1;
+        height: 100%;
+    }
+
+    .title-right {
+        flex: 1;
+    }
+
+    .title-center {
+        height: 100%;
+        width: 1400px;
+        display: flex;
+        flex-direction: row;
+        /* justify-content: center; */
+        align-items: center;
+    }
+
+    /* .sub-title-inner-container {
         display: flex;
         align-items: center;
         height: 100%;
         width: var(--inner-component-width);
-    }
+    } */
 
     .sub-title {
-        margin: 0;
-        font-size: 1.5em;
+        margin: 0 auto;
+        font-size: 1.9em;
         color: white;
         font-family: var(--font-family);
         font-weight: 200; /* Thin font */
+        /* text-align: right; */
+        vertical-align: middle;
     }
 
     .main-area {
@@ -168,7 +196,6 @@
     .main-area-right {
         flex: 1;
         background-color: var(--light-gray);
-
         display: flex;
         flex-direction: column;
         align-items: left;      /* Center items vertically */
@@ -177,13 +204,17 @@
         padding-bottom: 100px;
     }
 
+
 </style>
 
 <div class="container">
-    <div class="sub-title-container">
-        <div class="sub-title-inner-container">
-            <h1 class="sub-title">Learn about diffusion and flow based generative models with interactive visualization. </h1>
+    <div class="title-container">
+        <div class="title-left"></div>
+        <div class="title-center">
+            <p class="title"><b>Diffusion</b>Lab</p>
+            <h1 class="sub-title">Learn about diffusion and flow  models with interactive visualization. </h1>
         </div>
+        <div class="title-right"></div>
     </div>
     <TrainingBar />
     <div class="main-area">

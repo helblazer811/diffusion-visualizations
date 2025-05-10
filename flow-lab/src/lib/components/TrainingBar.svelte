@@ -15,29 +15,22 @@
 
     .training-bar-inner-container {
         display: flex;
+        width: 1400px;
         align-items: center;
         height: 100%;
         width: var(--inner-component-width);
         margin: 0 auto;
-    }
-
-    .title {
-        margin: 0;
-        font-size: 3.0em;
-        color: var(--text-color);
-        font-family: var(--font-family);
-    }
+    }  
 
     .hyperparameter-menu {
         display: flex;
-        margin-left: 20px;
+        /* margin-left: 20px; */
         flex-direction: row;
     }
 </style>
 
 <div class="training-bar">
     <div class="training-bar-inner-container">
-        <p class="title"><b>Diffusion</b>Lab</p>
         <div class="hyperparameter-menu">
             {#each Object.entries(hyperparameterMenuConfig) as [name, entry]}
                 <HyperparameterSelect entry={entry} />
