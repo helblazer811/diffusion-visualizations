@@ -1,17 +1,11 @@
 /*
 *    Web worker that runs sampling for a given model. 
 */ 
-// import { ModelRegistry, ModelType } from '$lib/diffusion/model_registry';
 import { FlowModel } from '$lib/diffusion/flow_matching';
 import * as tf from '@tensorflow/tfjs';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 setWasmPaths('/tfjs-backend-wasm/');
 import '@tensorflow/tfjs-backend-wasm'; // Import the WebGL backend for TensorFlow.js
-// import '@tensorflow/tfjs-backend-wasm';
-
-// tf.setBackend('wasm').then(() => {
-//     self.postMessage({ status: 'ready' });
-// });
 
 const modelTypeToModelClass = {
     'Flow Matching': FlowModel,

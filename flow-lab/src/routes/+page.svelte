@@ -27,13 +27,11 @@
     import TimeSlider from '$lib/components/time_slider/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
     import DisplayArea from '$lib/components/display_area/DisplayArea.svelte';
+    import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
-    import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
-    import { FlowModel } from '$lib/diffusion/flow_matching';
 
     let datasetDict = {};
-
 
     function loadDataset(path: string) {
         return fetch(path)
@@ -50,43 +48,6 @@
         return model;
     }
 
-    // /**
-    //  * Draw samples from the model and update the UI state with the samples
-    //  * @param model The model to sample from
-    //  */
-    // async function drawSamples(
-    //     model,
-    //     numSamples: number,
-    //     numberOfSteps: number = 1000,
-    // ) {
-    //     // Sample from the model
-    //     const allSamples = model.sample(
-    //         numSamples,
-    //         numberOfSteps,
-    //     ); // shape [num_time_steps, num_samples, dim]
-    //     // Convert to a tensor
-    //     const allSamples = tf.tensor(allSamples);
-    //     // Update the UI state with the all time samples
-    //     allTimeSamples.set(allSamples);
-    //     // Compute the range of the points to use for the domain of each contour map
-    //     let flatAllTimeSamples = tf.reshape(allSamples, [numSamples * UIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
-    //     flatAllTimeSamples = flatAllTimeSamples.arraySync();
-    //     const xMin = d3.min(flatAllTimeSamples, d => d[0]);
-    //     const xMax = d3.max(flatAllTimeSamples, d => d[0]);
-    //     const yMin = d3.min(flatAllTimeSamples, d => d[1]);
-    //     const yMax = d3.max(flatAllTimeSamples, d => d[1]);
-    //     const domainRange = {
-    //         xMin: xMin - 0.01 * (xMax - xMin),
-    //         xMax: xMax + 0.01 * (xMax - xMin),
-    //         yMin: yMin - 0.01 * (yMax - yMin),
-    //         yMax: yMax + 0.01 * (yMax - yMin),
-    //     };
-    //     UIState.update(state => ({
-    //         ...state,
-    //         domainRange: domainRange,
-    //     }));
-    // }
-
     onMount(async () => {
         // Load the UI state
         const readonlyUIState = get(UIState);
@@ -101,18 +62,6 @@
         const defaultModelType = readonlyUIState.modelType;
         const defaultDataset: string = readonlyUIState.datasetName;
         const defaultModelPath: string = pretrainedModelPaths[defaultModelType][defaultDataset];
-        // console.log("Loading model from: ", defaultModelPath);
-        // const tfModel = await loadModel(defaultModelPath); 
-        // // Get the model class from the model type
-        // const modelClass = modelTypeToModelClass[defaultModelType];
-        // // Initialize the model
-        // const ourModel = new modelClass(
-        //     modelConfig[defaultModelType]["dim"],
-        //     modelConfig[defaultModelType]["hidden"],
-        // );
-        // Insert the tf model into the model
-        // ourModel.setModel(tfModel);
-        // console.log("Model loaded: ", ourModel);
         // Set up web worker threads for sampling and training
         const samplingWorker = new Worker(
             new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
@@ -120,11 +69,8 @@
         );
         // Add a listener to the sampling worker thread to receive the samples
         samplingWorker.onmessage = (e) => {
-            console.log(e)
             const { type, result: res } = e.data;
-            // console.log('Received message from worker:', e.data);
             if (type === 'result') {
-                // const { type, result: res, message } = e.data;
                 const allSamples = tf.tensor(e.data.allSamples);
                 // Update the UI state with the all time samples
                 allTimeSamples.set(allSamples);
@@ -152,15 +98,6 @@
             } else if (type === 'error') {
                 console.error('Worker error:', e.data.message);
             }
-            // 
-            // if (type === 'result') {
-            //     const result = res;
-            //     console.log('Got result from worker:', result);
-            // } else if (type === 'status') {
-            //     console.log('Worker status:', message);
-            // } else if (type === 'error') {
-            //     console.error('Worker error:', message);
-            // }
         };
         // Call the dummy worker thread 
         console.log("Calling the worker thread to sample...");
@@ -175,10 +112,6 @@
                 numberOfSteps: readonlyUIState.numberOfSteps,
             }
         });
-        // Draw samples with the model
-        // drawSamples(ourModel, readonlyUIState.numSamples, readonlyUIState.numberOfSteps);
-        // // Train default model type
-        // const defaultModelType = readonlyUIState.modelType;
         // Load up the chosen training dataset points as tf tensor
         const pointsTensor = datasetDict[readonlyUIState.datasetName];
         // Update the UI state with the training dataset
@@ -191,6 +124,48 @@
         );
         // Update the UI state with the source distribution samples
         sourceDistributionSamples.set(multivariateNormalSamples);
+        // Create a worker for training the model 
+        const trainingWorker = new Worker(
+            new URL('$lib/diffusion/workers/train_worker.ts', import.meta.url),
+            { type: 'module' }
+        );
+        // Add a listener to the training worker thread to receive the model
+        trainingWorker.onmessage = async (e) => {
+            const { type, result: res } = e.data;
+            if (type === 'result') {
+                // Get the model path 
+                const tfModelPath = e.data.tfModelPath;
+                // Make the model
+                const ModelClass = modelTypeToModelClass[defaultModelType];
+                const ourModel = new ModelClass(
+                    modelConfig.dim,
+                    modelConfig.hidden,
+                );
+                // Load up a model from the given file path
+                const tfModel = await tf.loadLayersModel(tfModelPath);
+                // // Set the model in the model class
+                ourModel.setModel(tfModel);
+                console.log(tfModel)
+            } else if (type === 'status') {
+                console.log('Worker status:', e.data.message);
+            } else if (type === 'error') {
+                console.error('Worker error:', e.data.message);
+            }
+        };
+        // Call the training worker thread
+        console.log("Calling the worker thread to train...");
+        trainingWorker.postMessage({
+            type: 'train',
+            data: {
+                modelType: defaultModelType,
+                modelConfig: modelConfig[defaultModelType],
+                datasetPath: datasetNameToPath[readonlyUIState.datasetName],
+                trainingConfig: {
+                    iterations: trainingConfig["iterations"],
+                    batchSize: trainingConfig["batchSize"],
+                },
+            }
+        });
         // // Load up a model from a file
         // // Train the model
         // console.log('Training model...');
