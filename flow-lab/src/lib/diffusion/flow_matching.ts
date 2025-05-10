@@ -91,7 +91,7 @@ export class FlowModel extends Model {
      */
     sample(num_samples: number, num_total_steps: number = 100): tf.Tensor3D {
         return tf.tidy(() => {
-            console.log("Number of samples: ", num_samples);
+            // console.log("Number of samples: ", num_samples);
             // Draw some initial samples from the source distribution 
             const x_0 = tf.randomNormal([num_samples, this.dim]);
             // Draw some linear spaced timesteps in [0, 1]

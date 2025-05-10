@@ -8,19 +8,19 @@ export const hyperparameterMenuConfig = {
         name: "Training Objective",
         options: [
             "Flow Matching",
-            "Diffusion"
+            // "Diffusion"
         ],
         default: "Flow Matching",
     },
-    "Number of Steps": {
-        name: "Number of Steps",
-        options: [
-            50,
-            100,
-            1000
-        ],
-        default: 1000,
-    },
+    // "Number of Steps": {
+    //     name: "Number of Steps",
+    //     options: [
+    //         50,
+    //         100,
+    //         1000
+    //     ],
+    //     default: 100,
+    // },
     "Sampler": {
         name: "Sampler",
         options: [
@@ -76,7 +76,7 @@ export const interfaceSettings = {
 
 export const UIState = writable({
     modelType: hyperparameterMenuConfig["Training Objective"].default,
-    numberOfSteps: hyperparameterMenuConfig["Number of Steps"].default,
+    numberOfSteps: 100, // Number of steps to take in the sampler
     datasetName: "Three Modes", // Default dataset name
     numSamples: 2000, // Number of samples to generate
     // sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution

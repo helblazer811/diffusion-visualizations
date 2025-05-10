@@ -108,6 +108,17 @@
         // Insert the tf model into the model
         ourModel.setModel(tfModel);
         console.log("Model loaded: ", ourModel);
+        // Call the dummy worker thread 
+        const worker = new Worker(
+            new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
+            { type: 'module' }
+        );
+        worker.postMessage({
+            type: 'sample',
+            // model: ourModel,
+            // numSamples: readonlyUIState.numSamples,
+            // numberOfSteps: readonlyUIState.numberOfSteps,
+        });
         // Draw samples with the model
         drawSamples(ourModel, readonlyUIState.numSamples, readonlyUIState.numberOfSteps);
         // // Train default model type
