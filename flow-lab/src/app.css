@@ -2,7 +2,7 @@
 :root {
     --inner-component-width: 1400px;
     --dark-blue: #305886;
-    --light-gray: #eaeaea;
+    --light-gray: rgb(234, 234, 234);
     --font-family: 'Inter', sans-serif;
     --text-color: #555555;
 }

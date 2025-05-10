@@ -8,7 +8,7 @@
     function togglePlay() {
         isPlaying.update(value => !value);
     }
-    // If isPlayin is true then update currentTime until it reaches 1 based on playbackSpeed
+    // If isPlaying is true then update currentTime until it reaches 1 based on playbackSpeed
     // If isPlaying is false then stop updating currentTime
 
     $ : if ($isPlaying) {

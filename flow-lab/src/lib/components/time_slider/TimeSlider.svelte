@@ -117,7 +117,7 @@
             type="range" 
             min="0" 
             max="1" 
-            step="0.01"
+            step="0.001"
             list="ticks"
             class="slider"
             style={sliderStyle}
@@ -126,7 +126,7 @@
         <div class="tick-container">
             <div class="tick" style="left: 1%;"></div>
             <div 
-                class="tick-label" 
+                class="tick-label"
                 style="left: 1%;"
             >
                 t=0

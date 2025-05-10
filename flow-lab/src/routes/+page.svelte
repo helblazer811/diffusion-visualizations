@@ -9,13 +9,13 @@
     import { onMount } from 'svelte';
     import { get } from 'svelte/store';
     // Load up the application config
-    import { pretrainedModelPaths, modelTypeToModelClass, modelConfig, datasetNameToPath, trainingConfig} from '$lib/state';
+    import { pretrainedModelPaths, modelTypeToModelClass, modelConfig, datasetNameToPath, trainingConfig, sourceDistributionSamples} from '$lib/state';
     // Load up the application state
     import { UIState, model } from '$lib/state';
     // Load up the components
     import TimeSlider from '$lib/components/time_slider/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
-    import DistributionCanvas from '$lib/components/distribution_canvas/DistributionCanvas.svelte';
+    import DisplayArea from '$lib/components/display_area/DisplayArea.svelte';
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
     import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
@@ -60,17 +60,21 @@
             targetDistributionSamples: pointsTensor,
         }));
         // Draw some gaussian samples to put into the UI state as well
-        const sourceDistributionSamples = sampleMultivariateNormal(
+        const multivariateNormalSamples = sampleMultivariateNormal(
             [0, 0],
             [[1, 0], [0, 1]],
             readonlyUIState.numSamples
         );
-        console.log('Source distribution samples shape: ', sourceDistributionSamples.shape);
+        // console.log('Source distribution samples shape: ', sourceDistributionSamples.shape);
+        // Convert the tensor to a plain 2d array
+        // const sourceDistributionSamplesArray = await sourceDistributionSamples.array();
+        // sourceDistributionSamples.set(multivariateNormalSamples);
+        sourceDistributionSamples.set(multivariateNormalSamples);
         // Update the UI state with the source distribution samples
-        UIState.update(state => ({
-            ...state,
-            sourceDistributionSamples: sourceDistributionSamples,
-        }));
+        // UIState.update(state => ({
+        //     ...state,
+        //     sourceDistributionSamples: sourceDistributionSamplesArray,
+        // }));
         // Set up tfjs to use the WebGL backend
         await tf.setBackend('wasm');
         await tf.ready();
@@ -221,7 +225,7 @@
         <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
         <div class="main-area-left"></div>
         <div class="main-area-center">
-            <DistributionCanvas />  
+            <DisplayArea />  
             <TimeSlider /> 
         </div>
         <div class="main-area-right">

@@ -65,8 +65,8 @@ export const userInterfaceConfig = {};
 export const interfaceSettings = {
     distributionWidth: 600,
     distributionHeight: 600,
-    distributionCanvasWidth: 1400,
-    distributionCanvasHeight: 600,
+    displayAreaWidth: 1400,
+    displayAreaHeight: 600,
     pointColor: "#4594e3",
 }
 
@@ -77,7 +77,7 @@ export const UIState = writable({
     numberOfSteps: hyperparameterMenuConfig["Number of Steps"].default,
     datasetName: "Three Modes", // Default dataset name
     numSamples: 2000, // Number of samples to generate
-    sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution
+    // sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution
     targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
     currentDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the current distribution
     allTimeSamples: undefined, // This holds a tensorflow tensor contianing samples from multiple timesteps
@@ -89,6 +89,7 @@ export const UIState = writable({
     }
 });
 
+export const sourceDistributionSamples = writable(undefined);
 export const model = writable(null);
 export const currentTime = writable(0);
 export const isPlaying = writable(false);

@@ -1,11 +1,10 @@
 <script>
     import * as tf from '@tensorflow/tfjs';
 
-    import { UIState, currentTime } from '$lib/state';
+    import { UIState, currentTime, sourceDistributionSamples} from '$lib/state';
     import { interfaceSettings } from '$lib/state';
 
-    import Distribution from '$lib/components/distribution_canvas/Distribution.svelte';
-    let svgElement;
+    import Distribution from '$lib/components/display_area/Distribution.svelte';
     
     // If the currentTime changes then update the current distribution samples in the UI state
     $: if ($currentTime) {
@@ -26,37 +25,36 @@
 
 </script>
 
-<svg 
-    bind:this={svgElement} 
-    width={interfaceSettings.distributionCanvasWidth} 
-    height={interfaceSettings.distributionCanvasHeight}
-></svg>
-{#if svgElement}
+<style>
+    .display-area {
+        position: relative;
+    }
+</style>
+
+<div 
+    class="display-area" 
+    style="width: {interfaceSettings.displayAreaWidth}px; height: {interfaceSettings.displayAreaHeight}px;"
+>
     <Distribution
-        svgElement={svgElement}
-        data={$UIState.sourceDistributionSamples}
+        data={$sourceDistributionSamples}
         xLocation={0}
-        opacity={0.15}
+        opacity={1.0}
         label="Source Distribution"
         distributionId="source"
     />
-
-    <Distribution
-        svgElement={svgElement}
+    <!-- <Distribution
         data={$UIState.targetDistributionSamples}
         xLocation={800}
         opacity={0.15}
         label="Target Distribution"
         distributionId="target"
     />
-
     <Distribution
-        svgElement={svgElement}
         data={$UIState.currentDistributionSamples}
-        xLocation={$currentTime * (interfaceSettings.distributionCanvasWidth - interfaceSettings.distributionWidth)}
+        xLocation={$currentTime * (interfaceSettings.displayAreaWidth - interfaceSettings.distributionWidth)}
         opacity={1.0}
         label=""
         labelIsLatex={true}
         distributionId="current"
-    />
-{/if}
+    /> -->
+</div>
