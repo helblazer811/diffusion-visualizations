@@ -1,7 +1,14 @@
 <script>
     import * as tf from '@tensorflow/tfjs';
 
-    import { UIState, currentTime, sourceDistributionSamples} from '$lib/state';
+    import { 
+        UIState, 
+        currentTime, 
+        sourceDistributionSamples,
+        targetDistributionSamples,
+        currentDistributionSamples,
+        allTimeSamples
+    } from '$lib/state';
     import { interfaceSettings } from '$lib/state';
 
     import Distribution from '$lib/components/display_area/Distribution.svelte';
@@ -15,12 +22,9 @@
             currentTimeIndex = $UIState.numberOfSteps - 1;
         }
         // Pull out the current time samples from the all time samples
-        const currentSamples = tf.tidy(() => $UIState.allTimeSamples.gather(currentTimeIndex));
+        const currentSamples = tf.tidy(() => $allTimeSamples.gather(currentTimeIndex));
         // Update the current distribution samples in the UI state
-        UIState.update(state => ({
-            ...state,
-            currentDistributionSamples: currentSamples
-        }));
+        currentDistributionSamples.set(currentSamples);
     }
 
 </script>
@@ -38,23 +42,23 @@
     <Distribution
         data={$sourceDistributionSamples}
         xLocation={0}
-        opacity={1.0}
+        opacity={0.15}
         label="Source Distribution"
         distributionId="source"
     />
-    <!-- <Distribution
-        data={$UIState.targetDistributionSamples}
+    <Distribution
+        data={$targetDistributionSamples}
         xLocation={800}
         opacity={0.15}
         label="Target Distribution"
         distributionId="target"
     />
     <Distribution
-        data={$UIState.currentDistributionSamples}
+        data={$currentDistributionSamples}
         xLocation={$currentTime * (interfaceSettings.displayAreaWidth - interfaceSettings.distributionWidth)}
         opacity={1.0}
         label=""
         labelIsLatex={true}
         distributionId="current"
-    /> -->
+    />
 </div>

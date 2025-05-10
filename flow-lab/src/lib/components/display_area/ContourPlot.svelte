@@ -1,9 +1,18 @@
 
 <script lang="ts">
-    import * as d3 from 'd3';
     import * as tf from '@tensorflow/tfjs';
+    import * as d3 from 'd3';
 
-    import { interfaceSettings, $UIState } from '$lib/state';
+    import { interfaceSettings, UIState } from '$lib/state';
+
+    export let data: tf.Tensor; // Data to plot
+    export let distributionId: string = "target"; // ID for the distribution canvas
+    export let xLocation: number = 0; // X location of the contour
+    export let opacity: number = 0.5; // Opacity of the contour
+    export let colorMap: string = "Blues"; // Color map for the heatmap
+    export let bandwidth: number = 30; // Bandwidth for the contour density
+
+    let svgElement: SVGSVGElement; // Create a separate SVG element for each distribution
     
     function plotContour(
         data: tf.Tensor,
@@ -53,4 +62,28 @@
             .attr("fill-opacity", opacity)
             .attr("transform", `translate(${xLocation}, 0)`);
     }
+
+    // If the data points change then replot
+    $: if (data && svgElement) {
+        plotContour(data, opacity, xLocation, distributionId);
+    }
 </script>
+
+<style> 
+    svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<svg
+    bind:this={svgElement}
+    id="svg_{distributionId}" 
+    width={interfaceSettings.distributionWidth}
+    height={interfaceSettings.distributionHeight}
+    style={"left: " + xLocation + "px;"}
+>
+</svg>

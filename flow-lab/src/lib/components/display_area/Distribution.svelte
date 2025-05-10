@@ -6,6 +6,7 @@
     // import h337 from 'heatmap.js';
     // import { heatmap } from '$lib/components/display_area/heatmap.ts';
     import Heatmap from '$lib/components/display_area/Heatmap.svelte';
+    import ContourPlot from '$lib/components/display_area/ContourPlot.svelte';
 
     import { interfaceSettings } from '$lib/state';
     import { UIState } from '$lib/state';
@@ -21,7 +22,7 @@
     export let labelIsLatex: boolean = false; // Flag to indicate if the label is in LaTeX format
     export let label: string; // Label for the distribution
     export let distributionId: string; // ID for the distribution canvas
-    export let displayMode: string = "heatmap"; // Display mode for the distribution
+    export let displayMode: string = "contour"; // Display mode for the distribution
 
     function displayLatex(
         formula: string,
@@ -113,9 +114,19 @@
 <style>
 </style>
 
-<Heatmap
-    data={data}
-    distributionId={distributionId}
-    xLocation={xLocation}
-    opacity={opacity}
-/>
+{#if displayMode === "heatmap"}
+    <Heatmap
+        data={data}
+        distributionId={distributionId}
+        xLocation={xLocation}
+        opacity={opacity}
+    />
+{:else if displayMode === "contour"}
+    <ContourPlot
+        data={data}
+        distributionId={distributionId}
+        xLocation={xLocation}
+        opacity={opacity}
+    />
+{/if}
+

@@ -51,8 +51,8 @@ export const modelConfig = {
 };
 
 export const trainingConfig = {
-    iterations: 1000,
-    batchSize: 256,
+    iterations: 2000,
+    batchSize: 32,
 }
 
 export const datasetNameToPath = {
@@ -78,9 +78,9 @@ export const UIState = writable({
     datasetName: "Three Modes", // Default dataset name
     numSamples: 2000, // Number of samples to generate
     // sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution
-    targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
-    currentDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the current distribution
-    allTimeSamples: undefined, // This holds a tensorflow tensor contianing samples from multiple timesteps
+    // targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
+    // currentDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the current distribution
+    // allTimeSamples: undefined, // This holds a tensorflow tensor contianing samples from multiple timesteps
     domainRange: {
         xMin: -3,
         xMax: 3,
@@ -89,7 +89,10 @@ export const UIState = writable({
     }
 });
 
+export const targetDistributionSamples = writable(undefined);
 export const sourceDistributionSamples = writable(undefined);
+export const currentDistributionSamples = writable(undefined);
+export const allTimeSamples = writable(undefined);
 export const model = writable(null);
 export const currentTime = writable(0);
 export const isPlaying = writable(false);

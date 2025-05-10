@@ -62,7 +62,7 @@
         function gaussian(u) {
             return Math.exp(-0.5 * u * u) / Math.sqrt(2 * Math.PI);
         }
-
+        console.log(new Date().toLocaleTimeString());
         // Estimate density at each grid point
         for (let i = 0; i < resolution; i++) {
             for (let j = 0; j < resolution; j++) {
@@ -77,7 +77,7 @@
                 densityGrid[i][j] = sum;
             }
         }
-
+        console.log(new Date().toLocaleTimeString());
         // Normalize the density grid
         let maxDensity = 0;
         for (let i = 0; i < resolution; i++) {
@@ -87,19 +87,26 @@
                 }
             }
         }
-
+        console.log(new Date().toLocaleTimeString());
         // Draw to canvas
-        for (let i = 0; i < resolution; i++) {
-            for (let j = 0; j < resolution; j++) {
-                const val = densityGrid[i][j] / maxDensity;
-                const alpha = val;
-                // if (val < 0.01) continue; // Skip low density areas
-                // ctx.fillStyle = `rgba(0, 0, 255, ${alpha})`;
-                const transparentToBlue = d3.interpolateRgb("rgb(234, 234, 234)", "rgba(0, 0, 255, 1)");
-                ctx.fillStyle = transparentToBlue(val); // Use d3 color scheme
-                ctx.fillRect(i * stepX, j * stepY, stepX, stepY);
+        let colorScale = d3.interpolateRgb("rgb(234, 234, 234)", "rgba(0, 0, 255, 1)");
+        const imageData = ctx.createImageData(width, height);
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const value = densityGrid[y][x] / maxDensity; // should be in [0, 1]
+                const color = d3.color(colorScale(value));
+                const index = (y * width + x) * 4;
+
+                imageData.data[index]     = color.r; // Red
+                imageData.data[index + 1] = color.g; // Green
+                imageData.data[index + 2] = color.b; // Blue
+                imageData.data[index + 3] = 255;     // Alpha (fully opaque)
             }
         }
+
+        ctx.putImageData(imageData, 0, 0);
+        console.log(new Date().toLocaleTimeString());
     }
 
     // If the data points change then replot

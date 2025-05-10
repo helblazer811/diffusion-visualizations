@@ -9,7 +9,17 @@
     import { onMount } from 'svelte';
     import { get } from 'svelte/store';
     // Load up the application config
-    import { pretrainedModelPaths, modelTypeToModelClass, modelConfig, datasetNameToPath, trainingConfig, sourceDistributionSamples} from '$lib/state';
+    import { 
+        pretrainedModelPaths, 
+        modelTypeToModelClass, 
+        modelConfig, 
+        datasetNameToPath, 
+        trainingConfig, 
+        sourceDistributionSamples,
+        targetDistributionSamples,
+        currentDistributionSamples,
+        allTimeSamples
+    } from '$lib/state';
     // Load up the application state
     import { UIState, model } from '$lib/state';
     // Load up the components
@@ -55,36 +65,25 @@
         // Load up the chosen training dataset points as tf tensor
         const pointsTensor = datasetDict[readonlyUIState.datasetName];
         // Update the UI state with the training dataset
-        UIState.update(state => ({
-            ...state,
-            targetDistributionSamples: pointsTensor,
-        }));
+        targetDistributionSamples.set(pointsTensor);
         // Draw some gaussian samples to put into the UI state as well
         const multivariateNormalSamples = sampleMultivariateNormal(
             [0, 0],
             [[1, 0], [0, 1]],
             readonlyUIState.numSamples
         );
-        // console.log('Source distribution samples shape: ', sourceDistributionSamples.shape);
-        // Convert the tensor to a plain 2d array
-        // const sourceDistributionSamplesArray = await sourceDistributionSamples.array();
-        // sourceDistributionSamples.set(multivariateNormalSamples);
-        sourceDistributionSamples.set(multivariateNormalSamples);
         // Update the UI state with the source distribution samples
-        // UIState.update(state => ({
-        //     ...state,
-        //     sourceDistributionSamples: sourceDistributionSamplesArray,
-        // }));
-        // Set up tfjs to use the WebGL backend
-        await tf.setBackend('wasm');
-        await tf.ready();
+        sourceDistributionSamples.set(multivariateNormalSamples);
         // Train the model
         console.log('Training model...');
         ourModel.train(
             pointsTensor,
             trainingConfig["iterations"],
             trainingConfig["batchSize"],
-        ).then(() => {
+        ).then(async () => {
+            // Set up tfjs to use the WebGL backend
+            await tf.setBackend('wasm');
+            await tf.ready();
             console.log('Model trained successfully');
             // Save the model into the model store
             model.set(ourModel);
@@ -92,12 +91,14 @@
             // model.save(defaultModelPath);
             // Now draw all time samples from the model and put them into the UI state
             console.log('Sampling from the model...');
-            const allTimeSamples = ourModel.sample(
+            const allSamples = ourModel.sample(
                 readonlyUIState.numSamples,
                 readonlyUIState.numberOfSteps,
             ); // shape [num_time_steps, num_samples, dim]
+            // Update the UI state with the all time samples
+            allTimeSamples.set(allSamples);
             // Compute the range of the points to use for the domain of each contour map
-            let flatAllTimeSamples = tf.reshape(allTimeSamples, [readonlyUIState.numSamples * readonlyUIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
+            let flatAllTimeSamples = tf.reshape(allSamples, [readonlyUIState.numSamples * readonlyUIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
             flatAllTimeSamples = flatAllTimeSamples.arraySync();
             const xMin = d3.min(flatAllTimeSamples, d => d[0]);
             const xMax = d3.max(flatAllTimeSamples, d => d[0]);
@@ -112,12 +113,6 @@
             UIState.update(state => ({
                 ...state,
                 domainRange: domainRange,
-            }));
-            // Update the UI state with the all time samples
-            console.log('All time samples shape: ', allTimeSamples.shape);
-            UIState.update(state => ({
-                ...state,
-                allTimeSamples: allTimeSamples,
             }));
         }).catch((error) => {
             console.error('Error training the model:', error);
