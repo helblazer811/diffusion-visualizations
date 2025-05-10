@@ -15,7 +15,6 @@ self.onmessage = async (e) => {
     const { type, data } = e.data;
 
     if (type === 'sample') {
-        console.log('Sampling with data:', data);
         const modelJSONPath = data.modelJSONPath;
         const modelType = data.modelType;
         const modelConfig = data.modelConfig;

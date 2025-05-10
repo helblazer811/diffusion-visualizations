@@ -31,6 +31,8 @@
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
 
+    export let trainModel: boolean = false; // Flag to indicate if the model is being trained
+
     let datasetDict = {};
 
     function loadDataset(path: string) {
@@ -153,19 +155,21 @@
             }
         };
         // Call the training worker thread
-        console.log("Calling the worker thread to train...");
-        trainingWorker.postMessage({
-            type: 'train',
-            data: {
-                modelType: defaultModelType,
-                modelConfig: modelConfig[defaultModelType],
-                datasetPath: datasetNameToPath[readonlyUIState.datasetName],
-                trainingConfig: {
-                    iterations: trainingConfig["iterations"],
-                    batchSize: trainingConfig["batchSize"],
-                },
-            }
-        });
+        if (trainModel) {
+            console.log("Calling the worker thread to train...");
+            trainingWorker.postMessage({
+                type: 'train',
+                data: {
+                    modelType: defaultModelType,
+                    modelConfig: modelConfig[defaultModelType],
+                    datasetPath: datasetNameToPath[readonlyUIState.datasetName],
+                    trainingConfig: {
+                        iterations: trainingConfig["iterations"],
+                        batchSize: trainingConfig["batchSize"],
+                    },
+                }
+            });
+        }
         // // Load up a model from a file
         // // Train the model
         // console.log('Training model...');

@@ -22,7 +22,6 @@ async function loadDataset(path: string) {
 }
 
 self.onmessage = async (e) => {
-    console.log('Training with data:', e.data);
     const { type, data } = e.data;
     // Destructure the data
     const { modelType, modelConfig, datasetPath, trainingConfig } = data;
