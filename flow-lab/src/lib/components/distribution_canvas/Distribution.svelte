@@ -19,7 +19,7 @@
     export let svgElement: SVGSVGElement;
     export let label: string; // Label for the distribution
     export let distributionId: string; // ID for the distribution canvas
-    export let displayMode: string = "scatter"; // Display mode for the distribution
+    export let displayMode: string = "heatmap"; // Display mode for the distribution
 
     function plotContour(
         data: tf.Tensor,
@@ -66,6 +66,73 @@
             .attr("stroke-opacity", opacity)
             .attr("fill-opacity", opacity)
             .attr("transform", `translate(${xLocation}, 0)`);
+    }
+
+    function plotHeatmap(
+        data: tf.Tensor,
+        opacity: number = 0.5,
+        xLocation: number = 0,
+        distributionId: string = "target",
+    ) {
+        const values = data.arraySync() as number[][];
+
+        // Extract range from UIState
+        const xDomain = [$UIState.domainRange.xMin, $UIState.domainRange.xMax];
+        const yDomain = [$UIState.domainRange.yMin, $UIState.domainRange.yMax];
+
+        const width = interfaceSettings.distributionWidth;
+        const height = interfaceSettings.distributionHeight;
+
+        const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
+        const yScale = d3.scaleLinear().domain(yDomain).range([0, height]);
+
+        const xBins = 60;
+        const yBins = 60;
+        const xStep = (xDomain[1] - xDomain[0]) / xBins;
+        const yStep = (yDomain[1] - yDomain[0]) / yBins;
+
+        // Initialize grid counts
+        const grid = Array.from({ length: xBins }, () =>
+            Array.from({ length: yBins }, () => 0)
+        );
+
+        // Fill grid with counts
+        for (const [x, y] of values) {
+            const xi = Math.floor((x - xDomain[0]) / xStep);
+            const yi = Math.floor((y - yDomain[0]) / yStep);
+            if (xi >= 0 && xi < xBins && yi >= 0 && yi < yBins) {
+                grid[xi][yi]++;
+            }
+        }
+
+        const flatGrid = grid.flat();
+        const maxDensity = d3.max(flatGrid);
+
+        const color = d3.scaleSequential(d3.interpolateInferno)
+            .domain([0, maxDensity]);
+
+        const svg = d3.select("svg");
+
+        let group = svg.select(`#${distributionId}`);
+        if (group.empty()) {
+            group = svg.append("g").attr("id", distributionId);
+        } else {
+            group.selectAll("*").remove();
+        }
+
+        // Render cells
+        for (let xi = 0; xi < xBins; xi++) {
+            for (let yi = 0; yi < yBins; yi++) {
+                group.append("rect")
+                    .attr("x", xScale(xDomain[0] + xi * xStep) + xLocation)
+                    .attr("y", yScale(yDomain[0] + yi * yStep))
+                    .attr("width", xScale(xDomain[0] + xStep) - xScale(xDomain[0]))
+                    .attr("height", yScale(yDomain[0] + yStep) - yScale(yDomain[0]))
+                    .attr("fill", color(grid[xi][yi]))
+                    .attr("fill-opacity", opacity)
+                    .attr("stroke", "none");
+            }
+        }
     }
 
     function plotScatterPlot(
@@ -186,9 +253,14 @@
         if (displayMode === "scatter") {
             // Plot the scatter plot
             plotScatterPlot(data, opacity, xLocation, distributionId);
-        } else {
+        } else if (displayMode === "heatmap") {
+            // Plot the contour
+            plotHeatmap(data, opacity, xLocation, distributionId);
+        } else if (displayMode === "contour") {
             // Plot the contour
             plotContour(data, opacity, xLocation, distributionId);
+        } else {
+            console.error("Unknown display mode: ", displayMode);
         }
         // Plot title above the contour
         // TODO change manual text display location maybe
@@ -199,65 +271,7 @@
             displayLatex(label, xLocation, 50 - 52, distributionId);
         }
     }
-    // // Update source distribution if it changes
-    // $: if (UIState.sourceDistributionSamples) {
-    //     // Plot the source distribution
-    //     plotContour(UIState.sourceDistributionSamples, 0.15, 0);
-    //     // Plot title above the contour
-    //     const svg = d3.select(svgElement);
-    //     displayText(svg, "Source Distribution", 0 + interfaceSettings.distributionWidth / 2, 50);
-    // }
-    // // Update current distribution if it changes
-    // $: if (UIState.currentDistributionSamples) {
-    //     const xLocation = UIState.currentTime * (interfaceSettings.distributionWidth - 800);
-    //     plotContour(UIState.currentDistributionSamples, 1.0, xLocation);
-    //     // Only show if the x location is not overlapping with source or target
-    //     if (xLocation > 150 && xLocation < interfaceSettings.distributionWidth - 800 - 150) {
-    //         displayLatex("p_t(x)", xLocation + 800 / 2 - 150, 50 - 52);
-    //     }
-    // }
-    // // Run the plot contour if current Distribution changes
-    // $: if (
-    //     UIState.targetDistributionSamples && svgElement || 
-    //     UIState.currentDistributionSamples && svgElement
-    // ) {
-    //     // Clear existing contours
-    //     const svg = d3.select(svgElement);
-    //     svg.selectAll("*").remove(); // Clear previous contours
-    //     // Plot the source distribution
-    //     plotContour(UIState.currentDistributionSamples, 0.15, 0);
-    //     // Plot the target distribution
-    //     // plotContour(UIState.targetDistributionSamples, 0.15, 800);
-    //     // // Plot title above the contour
-    //     // svg.append("text")
-    //     //     .attr("x", 800 + distributionWidth / 2)
-    //     //     .attr("y", 50)
-    //     //     .attr("text-anchor", "middle")
-    //     //     .style("font-size", "34px")
-    //     //     .style("font-family", "Helvetica, sans-serif")
-    //     //     .style("fill", "#7b7b7b")
-    //     //     .text("Target Distribution");
-    //     // // Plot the current distribution
-    //     // // First compute the x location based on the current time
-    //     // const xLocation = currentTime * (distributionCanvasWidth - distributionWidth);
-    //     // plotContour(currentDistributionSamples, 1.0, xLocation);
-    //     // // Draw latex over current distribution
-    //     // // Only show if the x location is not overlapping with source or target
-    //     // if (xLocation > 150 && xLocation < distributionCanvasWidth - distributionWidth - 150) {
-    //     //     // Create a foreignObject to hold HTML
-    //     //     displayLatex("p_t(x)", xLocation + distributionWidth / 2 - 150, 50 - 52);
-    //     // }
 </script>
 
 <style>
-    /* .canvas {
-        width: 100%;
-        height: 100%;
-        background-color: var(--light-gray);
-    } */
 </style>
-
-<!-- <div class="canvas"> -->
-<!-- <canvas id="densityCanvas" bind:this={canvas} width="0" height="0"></canvas> -->
-<!-- <svg bind:this={svgElement} width={interfaceSettings.distributionCanvasWidth} height={canvasHeight}></svg>    -->
-<!-- </div> -->

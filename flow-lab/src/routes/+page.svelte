@@ -219,9 +219,7 @@
     <TrainingBar />
     <div class="main-area">
         <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
-        <div class="main-area-left">
-
-        </div>
+        <div class="main-area-left"></div>
         <div class="main-area-center">
             <DistributionCanvas />  
             <TimeSlider /> 
