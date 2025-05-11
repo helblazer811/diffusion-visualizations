@@ -246,7 +246,7 @@
 <style>
 
     .title-container {
-        height: 70px;
+        height: 60px;
         width: 100%;
         background-color: var(--dark-blue);
         display: flex;
@@ -275,7 +275,7 @@
     .sub-title {
         width: 100%;
         margin: 0 auto;
-        font-size: 1.9em;
+        font-size: 1.7em;
         color: white;
         font-family: var(--font-family);
         font-weight: 200; /* Thin font */

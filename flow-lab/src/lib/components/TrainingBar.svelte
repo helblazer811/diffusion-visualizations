@@ -7,9 +7,9 @@
 <style>
     .training-bar {
         /* height: 110px; */
-        padding: 20px 0;
+        padding: 10px 0;
         width: 100%;
-        background-color: rgb(235, 235, 235);
+        background-color: rgb(243, 243, 243);
         /* Add drop shadow on bottom */
         display: flex;
         justify-content: center;

@@ -22,71 +22,7 @@
     export let colorMap: string = "Blues"; // Color map for the heatmap
     export let displayMode: string = "contour"; // Display mode for the distribution
 
-    function displayLatex(
-        formula: string,
-        xLocation: number,
-        yLocation: number,
-        distributionId: string = "target",
-    ) {
-        const svg = d3.select("svg");
-
-        let group = svg.select(`#${distributionId}_latex`);
-        if (group.empty()) {
-            group = svg.append("foreignObject")
-                .attr("id", distributionId + "_latex");
-        } else {
-            group.selectAll("*").remove();
-        }
-
-        group.attr("x", xLocation)
-            .attr("y", yLocation)
-            .attr("width", 300)
-            .attr("height", 100);
-
-        const div = group.append("xhtml:div")
-            .style("width", "100%")
-            .style("height", "100%")
-            .style("display", "flex")
-            .style("align-items", "center")
-            .style("justify-content", "center")
-            .style("font", "34px 'KaTeX_Main', serif")
-            .style("color", "#7b7b7b");
-
-        katex.render(formula, div.node(), {
-            throwOnError: false
-        });
-    }
-
-    function displayText(
-        text: string,
-        xLocation: number,
-        yLocation: number,
-        distributionId: string = "target",
-    ) {
-        // Select the group by ID, or create if not exists
-        const svg = d3.select("svg");
-        // NOTE: This prevents unwanted recreation of the group
-        let group = svg.select(`#${distributionId}_text`);
-        if (group.empty()) {
-            group = svg.append("g").attr("id", distributionId+"_text");
-        } else {
-            group.selectAll("*").remove(); // Clear previous contents of this group
-        }
-        // Plot title above the contour 
-        group.append("text")
-            .attr("x", xLocation)
-            .attr("y", yLocation)
-            .attr("text-anchor", "middle")
-            .style("font-size", "24px")
-            .style("font-family", "Helvetica, sans-serif")
-            .style("fill", "#7b7b7b")
-            .text(text);
-    }
-
 </script>
-
-<style>
-</style>
 
 {#if displayMode === "heatmap"}
     <Heatmap
@@ -103,6 +39,7 @@
         xLocation={xLocation}
         opacity={opacity}
         colorMap={colorMap}
+        label={label}
+        labelIsLatex={labelIsLatex}
     />
 {/if}
-
