@@ -20,6 +20,7 @@
         currentDistributionSamples,
         allTimeSamples,
         isPlaying,
+        datasetName
     } from '$lib/state';
     // Load up the application state
     import { UIState, model } from '$lib/state';
@@ -62,7 +63,7 @@
         }
         // Load up the default cached model
         const defaultModelType = readonlyUIState.modelType;
-        const defaultDataset: string = readonlyUIState.datasetName;
+        const defaultDataset: string = $datasetName;
         const defaultModelPath: string = pretrainedModelPaths[defaultModelType][defaultDataset];
         // Set up web worker threads for sampling and training
         const samplingWorker = new Worker(
@@ -115,7 +116,7 @@
             }
         });
         // Load up the chosen training dataset points as tf tensor
-        const pointsTensor = datasetDict[readonlyUIState.datasetName];
+        const pointsTensor = datasetDict[$datasetName];
         // Update the UI state with the training dataset
         targetDistributionSamples.set(pointsTensor);
         // // Draw some gaussian samples to put into the UI state as well
@@ -162,7 +163,7 @@
                 data: {
                     modelType: defaultModelType,
                     modelConfig: modelConfig[defaultModelType],
-                    datasetPath: datasetNameToPath[readonlyUIState.datasetName],
+                    datasetPath: datasetNameToPath[$datasetName],
                     trainingConfig: {
                         iterations: trainingConfig["iterations"],
                         batchSize: trainingConfig["batchSize"],

@@ -78,7 +78,6 @@ export const interfaceSettings = {
 export const UIState = writable({
     modelType: hyperparameterMenuConfig["Training Objective"].default,
     numberOfSteps: 100, // Number of steps to take in the sampler
-    datasetName: "Three Modes", // Default dataset name
     numSamples: 2000, // Number of samples to generate
     // sourceDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the source distribution
     // targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
@@ -92,6 +91,7 @@ export const UIState = writable({
     }
 });
 
+export const datasetName = writable("Three Modes");
 export const targetDistributionSamples = writable(undefined);
 export const sourceDistributionSamples = writable(undefined);
 export const currentDistributionSamples = writable(undefined);
