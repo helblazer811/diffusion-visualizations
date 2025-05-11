@@ -13,6 +13,7 @@
     export let fillColor: string = "#7b7b7b"; // Fill color for the contour
     export let bandwidth: number = 10; // Bandwidth for the contour density
     export let showBorder: boolean = false; // Flag to indicate if the border should be shown
+    export let borderColor: string = "#7b7b7b"; // Border color for the contour
     export let label: string; // Label for the distribution
     export let labelIsLatex: boolean = false; // Flag to indicate if the label is in LaTeX format
 
@@ -129,11 +130,11 @@
             .attr("d", d3.geoPath())
             // .attr("fill", d => color(d.value))
             .attr("fill", fillColor)
-            .attr("stroke", "#fff")
-            .attr("stroke-width", showBorder ? 2 : 0)
+            .attr("stroke", borderColor)
+            .attr("stroke-width", showBorder ? 3 : 0)
             .attr("stroke-opacity", opacity)
             .attr("fill-opacity", opacity)
-            .attr("mix-blend-mode", "multiply")
+            .attr("mix-blend-mode", "screen")
             .attr("transform", `translate(${xLocation}, 0)`);
     }
 

@@ -47,7 +47,8 @@
         distributionId="source"
         colorMap="Blues"
         showBorder={true}
-        fillColor="rgba(0, 0, 255, 0.5)"
+        fillColor="rgba(0, 0, 255, 0.2)"
+        borderColor="rgba(0, 0, 255, 1)"
     />
     <Distribution
         data={$targetDistributionSamples}
@@ -57,7 +58,8 @@
         distributionId="target"
         colorMap="Blues"
         showBorder={true}
-        fillColor="rgba(0, 0, 255, 0.5)"
+        fillColor="rgba(0, 0, 255, 0.2)"
+        borderColor="rgba(0, 0, 255, 1)"
     />
     <Distribution
         data={$currentDistributionSamples}
@@ -65,7 +67,8 @@
         opacity={0.8}
         label=""
         colorMap="Oranges"
-        fillColor="rgba(255, 165, 0, 0.6)"
+        fillColor="rgba(255, 92, 0, 0.5)"
+        borderColor="rgba(255, 92, 0, 1)"
         labelIsLatex={true}
         showBorder={true}
         distributionId="current"

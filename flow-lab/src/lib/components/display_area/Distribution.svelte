@@ -22,6 +22,7 @@
     export let displayMode: string = "contour"; // Display mode for the distribution
     export let showBorder: boolean = false; // Flag to indicate if the border should be shown
     export let fillColor: string = "#7b7b7b"; // Fill color for the contour
+    export let borderColor: string = "#7b7b7b"; // Border color for the contour
 
 </script>
 
@@ -44,5 +45,6 @@
         labelIsLatex={labelIsLatex}
         showBorder={showBorder}
         fillColor={fillColor}
+        borderColor={borderColor}
     />
 {/if}
