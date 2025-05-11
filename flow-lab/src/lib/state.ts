@@ -33,6 +33,8 @@ export const hyperparameterMenuConfig = {
 export const pretrainedModelPaths = {
     "Flow Matching": {
         "Three Modes": "/models/flow_matching_three_modes/model.json",
+        "Concentric Circles": "/models/flow_matching_concentric_circles/model.json",
+        "Smiley Face": "/models/flow_matching_smiley_face/model.json",
     }
     // "Diffusion": "/models/diffusion_model.json",
 }

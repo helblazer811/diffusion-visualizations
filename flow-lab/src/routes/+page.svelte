@@ -34,6 +34,8 @@
 
     export let trainModel: boolean = false; // Flag to indicate if the model is being trained
 
+    let samplingWorker: Worker; // Web worker for sampling
+
     let datasetDict: any = {}; // Dictionary to hold the loaded datasets
 
     function loadDataset(path: string) {
@@ -51,26 +53,15 @@
         return model;
     }
 
-    onMount(async () => {
-        // Load the UI state
+    function callSamplingWorkerThread(
+        samplingWorker: Worker,
+        modelJSONPath: string,
+        modelType: string,
+        modelConfig: object,
+        numSamples: number,
+        numberOfSteps: number,
+    ) {
         const readonlyUIState = get(UIState);
-        // Load up each of the datasets
-        for (const [name, path] of Object.entries(datasetNameToPath)) {
-            const pointsTensor = await loadDataset(path);
-            datasetDict = { ...datasetDict, [name]: pointsTensor }; // triggers Svelte reactivity
-            // console.log(`Loaded dataset ${name} from ${path}`);
-            // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
-        }
-        // Save the dataset dict to the 
-        // Load up the default cached model
-        const defaultModelType = readonlyUIState.modelType;
-        const defaultDataset: string = $datasetName;
-        const defaultModelPath: string = pretrainedModelPaths[defaultModelType][defaultDataset];
-        // Set up web worker threads for sampling and training
-        const samplingWorker = new Worker(
-            new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
-            { type: 'module' }
-        );
         // Add a listener to the sampling worker thread to receive the samples
         samplingWorker.onmessage = (e) => {
             const { type, result: res } = e.data;
@@ -109,13 +100,46 @@
         samplingWorker.postMessage({
             type: 'sample',
             data: {
-                modelJSONPath: defaultModelPath,
-                modelType: defaultModelType,
-                modelConfig: modelConfig[defaultModelType],
+                modelJSONPath: modelJSONPath,
+                modelType: modelType,
+                modelConfig: modelConfig,
                 numSamples: readonlyUIState.numSamples,
                 numberOfSteps: readonlyUIState.numberOfSteps,
             }
         });
+    }
+
+    onMount(async () => {
+        // Load the UI state
+        const readonlyUIState = get(UIState);
+        // Load up each of the datasets
+        for (const [name, path] of Object.entries(datasetNameToPath)) {
+            const pointsTensor = await loadDataset(path);
+            datasetDict = { ...datasetDict, [name]: pointsTensor }; // triggers Svelte reactivity
+            // console.log(`Loaded dataset ${name} from ${path}`);
+            // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
+        }
+        // Save the dataset dict to the 
+        // Load up the default cached model
+        const defaultModelType = readonlyUIState.modelType;
+        const defaultDataset: string = $datasetName;
+        const defaultModelPath: string = pretrainedModelPaths[defaultModelType][defaultDataset];
+        // Call the dummy worker thread 
+        console.log("Calling the worker thread to sample...");
+        // Set up web worker threads for sampling and training
+        samplingWorker = new Worker(
+            new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
+            { type: 'module' }
+        );
+        // Run sampling worker thread
+        callSamplingWorkerThread(
+            samplingWorker,
+            defaultModelPath,
+            defaultModelType,
+            modelConfig[defaultModelType],
+            readonlyUIState.numSamples,
+            readonlyUIState.numberOfSteps
+        );
         // Load up the chosen training dataset points as tf tensor
         const pointsTensor = datasetDict[$datasetName];
         // Update the UI state with the training dataset
@@ -149,7 +173,8 @@
                 const tfModel = await tf.loadLayersModel(tfModelPath);
                 // // Set the model in the model class
                 ourModel.setModel(tfModel);
-                console.log(tfModel)
+                // Prompt to download the model
+                ourModel.download();
             } else if (type === 'status') {
                 console.log('Worker status:', e.data.message);
             } else if (type === 'error') {
@@ -157,7 +182,7 @@
             }
         };
         // Call the training worker thread
-        if (trainModel) {
+        if (false) {
             console.log("Calling the worker thread to train...");
             trainingWorker.postMessage({
                 type: 'train',
@@ -175,11 +200,37 @@
     });
 
     // Add handler for if datasetName changes
-    $: if ($datasetName && datasetDict) {
+    $: if ($datasetName && samplingWorker) {
         // Load the dataset
         const pointsTensor = datasetDict[$datasetName];
         // Update the UI state with the training dataset
         targetDistributionSamples.set(pointsTensor);
+        // Immediately remove the currentDistributionSamples
+        currentDistributionSamples.set(tf.zeros([0, 2]));
+        // Load up the model corresponding to the dataset
+        const defaultModelType = get(UIState).modelType;
+        const defaultModelPath = pretrainedModelPaths[defaultModelType][$datasetName];
+        // Load the model
+        loadModel(defaultModelPath).then((loadedModel) => {
+            // Set the model in the UI state
+            model.set(loadedModel);
+        });
+        console.log(defaultModelType)
+        console.log(defaultModelPath)
+        // Set up web worker threads for sampling and training
+        // const samplingWorker = new Worker(
+        //     new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
+        //     { type: 'module' }
+        // );
+        // Regenerate all of the samples 
+        callSamplingWorkerThread(
+            samplingWorker,
+            defaultModelPath,
+            defaultModelType,
+            modelConfig[defaultModelType],
+            get(UIState).numSamples,
+            get(UIState).numberOfSteps
+        )
     }
 
 </script>
