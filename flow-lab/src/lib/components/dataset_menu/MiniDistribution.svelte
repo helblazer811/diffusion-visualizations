@@ -26,15 +26,15 @@
         let xMax = d3.max(data, d => d[0]);
         let yMin = d3.min(data, d => d[1]);
         let yMax = d3.max(data, d => d[1]);
-        const margin = 0.1;
+        const margin = 0.2;
         const xRange = xMax - xMin;
         const yRange = yMax - yMin;
         xMin -= margin * xRange;
         xMax += margin * xRange;
         yMin -= margin * yRange;
         yMax += margin * yRange;
-        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, 65]);
-        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, 65]);
+        const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, interfaceSettings.miniDistributionWidth]);
+        const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, interfaceSettings.miniDistributionWidth]);
         // Make a scatter plot
         const svg = d3.select(svgElement); 
         // Select the group by ID, or create if not exists
@@ -65,8 +65,8 @@
 
 <style>
     .mini-distribution {
-        width: 65px;
-        height: 65px;
+        width: var(--mini-distribution-width);
+        height: var(--mini-distribution-width);
         position: relative;
         /* Rounded corners */
         border-radius: 5px;

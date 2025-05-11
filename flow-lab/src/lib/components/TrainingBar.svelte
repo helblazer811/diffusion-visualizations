@@ -9,13 +9,11 @@
         /* height: 110px; */
         padding: 20px 0;
         width: 100%;
-        background-color: white;
+        background-color: rgb(235, 235, 235);
         /* Add drop shadow on bottom */
-        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.8);
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 3;
     }
 
     .training-bar-inner-container {

@@ -8,7 +8,6 @@
     .dataset-menu {
         width: 100%;
         height: 100%;
-        background-color: var(--light-gray);
         display: flex;
         flex-direction: column;
         align-items: left; 
@@ -26,7 +25,7 @@
         font-weight: 400;
         margin: 0;
     }
-    
+
 </style>
 
 <div class="dataset-menu">

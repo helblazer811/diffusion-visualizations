@@ -68,8 +68,9 @@ export const datasetNameToPath = {
 export const userInterfaceConfig = {};
 
 export const interfaceSettings = {
-    distributionWidth: 600,
-    distributionHeight: 600,
+    distributionWidth: 550,
+    distributionHeight: 550,
+    miniDistributionWidth: 75,
     displayAreaWidth: 1100,
     displayAreaHeight: 600,
     pointColor: "#4594e3",

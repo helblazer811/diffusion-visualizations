@@ -284,15 +284,14 @@
     }
 
     .main-area {
-        background-color: var(--light-gray);
+        background-color: white;
         height: 680px;
         display: flex;
+        z-index: -1;
     }
 
     .main-area-left {
-        /* width: 20%; */
         flex: 1;
-        background-color: var(--light-gray);
     }
 
     .main-area-center {
@@ -301,6 +300,19 @@
 
     .main-area-right {
         flex: 1;
+    }
+
+    .footer {
+        height: 10px;
+        z-index: 1;
+        position: relative;
+        /* box-shadow: rgba(0, 0, 0, 0.8) 0px -2px -4px 0px; */
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2); /* upward shadow */
+    }
+
+    .training-bar-container {
+        position: relative;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px 0px;
     }
 
 
@@ -318,7 +330,9 @@
         <!-- </div> -->
         <!-- <div class="title-right"></div> -->
     </div>
-    <TrainingBar />
+    <div class="training-bar-container">
+        <TrainingBar />
+    </div>
     <div class="main-area">
         <!-- <DisplayOptionsMenu />  Menu of items to choose to collect from -->
         <div class="main-area-left"></div>
@@ -331,4 +345,5 @@
         </div>
         <!-- <DatasetMenu />  Dataset selector menu to choose the dataset to train on -->
     </div>
+    <div class="footer"></div>
 </div>
