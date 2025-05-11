@@ -70,7 +70,7 @@ export const userInterfaceConfig = {};
 export const interfaceSettings = {
     distributionWidth: 600,
     distributionHeight: 600,
-    displayAreaWidth: 1400,
+    displayAreaWidth: 1100,
     displayAreaHeight: 600,
     pointColor: "#4594e3",
 }

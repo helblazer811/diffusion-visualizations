@@ -22,7 +22,7 @@
         xLocation: number = 0,
         distributionId: string = "target",
         numberOfContours: number = 10,
-        showBorder: boolean = false,
+        showBorder: boolean = true,
     ) {
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
@@ -58,7 +58,7 @@
             .append("path")
             .attr("d", d3.geoPath())
             .attr("fill", d => color(d.value))
-            .attr("stroke", "#222")
+            .attr("stroke", "#ccc")
             .attr("stroke-width", showBorder ? 2 : 0)
             .attr("stroke-opacity", opacity)
             .attr("fill-opacity", opacity)

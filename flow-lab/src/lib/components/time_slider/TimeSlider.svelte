@@ -23,7 +23,10 @@
     .time-slider {
         /* width: 100%; */
         /* position: relative; */
-        width: 800px;
+        /* width: var(--display-area-width) - ; */
+        /* display area width minus  */
+        /* Add 150px just cause I think it looks a bit better */
+        width: calc(var(--display-area-width) - var(--distribution-width) + 150px);
         height: 40px;
         /* Add padding of half the width of the frame to each side 300px */
         /* padding: 0 200px; */

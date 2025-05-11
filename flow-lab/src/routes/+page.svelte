@@ -244,13 +244,6 @@
 </script>
 
 <style>
-    .title {
-        margin: 0;
-        margin-left: 30px;
-        font-size: 2.3em;
-        color: white;
-        font-family: var(--font-family);
-    }
 
     .title-container {
         height: 70px;
@@ -259,36 +252,28 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* max-width: var(--inner-component-width); */
+        /* max-width: var(--display-rea-width); */
         /* margin: 0 auto; */
-    }
-
-    .title-left {
-        flex: 1;
-        height: 100%;
-    }
-
-    .title-right {
-        flex: 1;
-    }
-
-    .title-center {
-        height: 100%;
-        width: 1400px;
-        display: flex;
-        flex-direction: row;
-        /* justify-content: center; */
-        align-items: center;
     }
 
     /* .sub-title-inner-container {
         display: flex;
         align-items: center;
         height: 100%;
-        width: var(--inner-component-width);
+        width: var(--display-rea-width);
     } */
 
+    .sub-title-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: var(--display-area-width);
+        /* margin-left: 20px; */
+    }
+
     .sub-title {
+        width: 100%;
         margin: 0 auto;
         font-size: 1.9em;
         color: white;
@@ -311,7 +296,7 @@
     }
 
     .main-area-center {
-        width: 1400px;
+        width: var(--display-rea-width);
     }
 
     .main-area-right {
@@ -330,12 +315,15 @@
 
 <div class="container">
     <div class="title-container">
-        <div class="title-left"></div>
-        <div class="title-center">
-            <p class="title"><b>Diffusion</b>Lab</p>
-            <h1 class="sub-title">Learn about diffusion and flow  models with interactive visualization. </h1>
+        <!-- <div class="title-left"></div> -->
+        <!-- <div class="title-center"> -->
+        <div class="sub-title-container">
+            <h1 class="sub-title"> 
+                Learn about diffusion and flow  models with interactive visualization. 
+            </h1>
         </div>
-        <div class="title-right"></div>
+        <!-- </div> -->
+        <!-- <div class="title-right"></div> -->
     </div>
     <TrainingBar />
     <div class="main-area">

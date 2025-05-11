@@ -49,7 +49,7 @@
     />
     <Distribution
         data={$targetDistributionSamples}
-        xLocation={800}
+        xLocation={interfaceSettings.displayAreaWidth - interfaceSettings.distributionWidth}
         opacity={0.35}
         label="Target Distribution"
         distributionId="target"
