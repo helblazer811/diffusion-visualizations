@@ -10,7 +10,9 @@
     export let xLocation: number = 0; // X location of the contour
     export let opacity: number = 0.5; // Opacity of the contour
     export let colorMap: string = "Blues"; // Color map for the heatmap
-    export let bandwidth: number = 20; // Bandwidth for the contour density
+    export let fillColor: string = "#7b7b7b"; // Fill color for the contour
+    export let bandwidth: number = 10; // Bandwidth for the contour density
+    export let showBorder: boolean = false; // Flag to indicate if the border should be shown
     export let label: string; // Label for the distribution
     export let labelIsLatex: boolean = false; // Flag to indicate if the label is in LaTeX format
 
@@ -81,11 +83,10 @@
     
     function plotContour(
         data: tf.Tensor,
-        opacity: number = 0.5,
+        opacity: number = 0.9,
         xLocation: number = 0,
         distributionId: string = "target",
-        numberOfContours: number = 10,
-        showBorder: boolean = true,
+        numberOfContours: number = 4,
     ) {
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
@@ -111,24 +112,28 @@
         // NOTE: This prevents unwanted recreation of the group
         let group = svg.select(`#${distributionId}`);
         if (group.empty()) {
-            group = svg.append("g").attr("id", distributionId);
+            group = svg.append("g")
+                .attr("id", distributionId)
+                .attr("isolation", "isolate"); // Prevents blending with other groups
         } else {
             group.selectAll("*").remove(); // Clear previous contents of this group
         }
         // Prepare a color palette
-        const color = d3.scaleSequential(colorScale)
-            .domain([0, d3.max(contours, d => d.value) * 1.2]);
+        // const color = d3.scaleSequential(colorScale)
+        //     .domain([0, d3.max(contours, d => d.value) * 1.2]);
         // 5. Draw contours
         group.selectAll("path")
             .data(contours)
             .enter()
             .append("path")
             .attr("d", d3.geoPath())
-            .attr("fill", d => color(d.value))
-            .attr("stroke", "#ccc")
+            // .attr("fill", d => color(d.value))
+            .attr("fill", fillColor)
+            .attr("stroke", "#fff")
             .attr("stroke-width", showBorder ? 2 : 0)
             .attr("stroke-opacity", opacity)
             .attr("fill-opacity", opacity)
+            .attr("mix-blend-mode", "multiply")
             .attr("transform", `translate(${xLocation}, 0)`);
     }
 

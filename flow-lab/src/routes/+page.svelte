@@ -21,6 +21,7 @@
         allTimeSamples,
         isPlaying,
         datasetName,
+        domainRange
     } from '$lib/state';
     // Load up the application state
     import { UIState, model } from '$lib/state';
@@ -84,16 +85,14 @@
                 const xMax = d3.max(flatAllTimeSamples, d => d[0]);
                 const yMin = d3.min(flatAllTimeSamples, d => d[1]);
                 const yMax = d3.max(flatAllTimeSamples, d => d[1]);
-                const domainRange = {
+                const localDomainRange = {
                     xMin: xMin - 0.08 * (xMax - xMin),
                     xMax: xMax + 0.08 * (xMax - xMin),
                     yMin: yMin - 0.08 * (yMax - yMin),
                     yMax: yMax + 0.08 * (yMax - yMin),
                 };
-                UIState.update(state => ({
-                    ...state,
-                    domainRange: domainRange,
-                }));
+                // TODO fix this logic
+                // domainRange.set(localDomainRange);
                 console.log("Domain range: ", domainRange);
                 // Make the UI state play
                 isPlaying.set(true);
