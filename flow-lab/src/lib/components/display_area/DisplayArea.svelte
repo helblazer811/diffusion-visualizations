@@ -42,22 +42,25 @@
     <Distribution
         data={$sourceDistributionSamples}
         xLocation={0}
-        opacity={0.15}
+        opacity={0.35}
         label="Source Distribution"
         distributionId="source"
+        colorMap="Blues"
     />
     <Distribution
         data={$targetDistributionSamples}
         xLocation={800}
-        opacity={0.15}
+        opacity={0.35}
         label="Target Distribution"
         distributionId="target"
+        colorMap="Blues"
     />
     <Distribution
         data={$currentDistributionSamples}
         xLocation={$currentTime * (interfaceSettings.displayAreaWidth - interfaceSettings.distributionWidth)}
-        opacity={1.0}
+        opacity={0.7}
         label=""
+        colorMap="Oranges"
         labelIsLatex={true}
         distributionId="current"
     />

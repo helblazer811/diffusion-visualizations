@@ -10,17 +10,19 @@
     export let xLocation: number = 0; // X location of the contour
     export let opacity: number = 0.5; // Opacity of the contour
     export let colorMap: string = "Blues"; // Color map for the heatmap
-    export let bandwidth: number = 30; // Bandwidth for the contour density
+    export let bandwidth: number = 20; // Bandwidth for the contour density
 
     let svgElement: SVGSVGElement; // Create a separate SVG element for each distribution
+
+    let colorScale = d3[`interpolate${colorMap}`];
     
     function plotContour(
         data: tf.Tensor,
         opacity: number = 0.5,
         xLocation: number = 0,
         distributionId: string = "target",
-        numberOfContours: number = 8,
-        showBorder: boolean = true,
+        numberOfContours: number = 10,
+        showBorder: boolean = false,
     ) {
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
@@ -47,8 +49,8 @@
             group.selectAll("*").remove(); // Clear previous contents of this group
         }
         // Prepare a color palette
-        const color = d3.scaleSequential(d3.interpolateBlues)
-            .domain([0, d3.max(contours, d => d.value) * 1.0]);
+        const color = d3.scaleSequential(colorScale)
+            .domain([0, d3.max(contours, d => d.value) * 1.2]);
         // 5. Draw contours
         group.selectAll("path")
             .data(contours)

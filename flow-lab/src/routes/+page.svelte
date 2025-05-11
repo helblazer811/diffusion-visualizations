@@ -20,7 +20,7 @@
         currentDistributionSamples,
         allTimeSamples,
         isPlaying,
-        datasetName
+        datasetName,
     } from '$lib/state';
     // Load up the application state
     import { UIState, model } from '$lib/state';
@@ -34,7 +34,7 @@
 
     export let trainModel: boolean = false; // Flag to indicate if the model is being trained
 
-    let datasetDict = {};
+    let datasetDict: any = {}; // Dictionary to hold the loaded datasets
 
     function loadDataset(path: string) {
         return fetch(path)
@@ -61,6 +61,7 @@
             // console.log(`Loaded dataset ${name} from ${path}`);
             // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
         }
+        // Save the dataset dict to the 
         // Load up the default cached model
         const defaultModelType = readonlyUIState.modelType;
         const defaultDataset: string = $datasetName;
@@ -171,53 +172,15 @@
                 }
             });
         }
-        // // Load up a model from a file
-        // // Train the model
-        // console.log('Training model...');
-        // ourModel.train(
-        //     pointsTensor,
-        //     trainingConfig["iterations"],
-        //     trainingConfig["batchSize"],
-        // ).then(async () => {
-        //     // Set up tfjs to use the WebGL backend
-        //     await tf.setBackend('wasm');
-        //     await tf.ready();
-        //     console.log('Model trained successfully');
-        //     // Save the model into the model store
-        //     model.set(ourModel);
-        //     // Save the model to the specified path
-        //     // model.save(defaultModelPath);
-        //     // Now draw all time samples from the model and put them into the UI state
-        //     console.log('Sampling from the model...');
-        //     const allSamples = ourModel.sample(
-        //         readonlyUIState.numSamples,
-        //         readonlyUIState.numberOfSteps,
-        //     ); // shape [num_time_steps, num_samples, dim]
-        //     // Update the UI state with the all time samples
-        //     allTimeSamples.set(allSamples);
-        //     // Compute the range of the points to use for the domain of each contour map
-        //     let flatAllTimeSamples = tf.reshape(allSamples, [readonlyUIState.numSamples * readonlyUIState.numberOfSteps, 2]); // shape [num_time_steps * num_samples, dim]
-        //     flatAllTimeSamples = flatAllTimeSamples.arraySync();
-        //     const xMin = d3.min(flatAllTimeSamples, d => d[0]);
-        //     const xMax = d3.max(flatAllTimeSamples, d => d[0]);
-        //     const yMin = d3.min(flatAllTimeSamples, d => d[1]);
-        //     const yMax = d3.max(flatAllTimeSamples, d => d[1]);
-        //     const domainRange = {
-        //         xMin: xMin - 0.01 * (xMax - xMin),
-        //         xMax: xMax + 0.01 * (xMax - xMin),
-        //         yMin: yMin - 0.01 * (yMax - yMin),
-        //         yMax: yMax + 0.01 * (yMax - yMin),
-        //     };
-        //     UIState.update(state => ({
-        //         ...state,
-        //         domainRange: domainRange,
-        //     }));
-        //     // Download the flow model
-        //     // ourModel.download()
-        // }).catch((error) => {
-        //     console.error('Error training the model:', error);
-        // });
     });
+
+    // Add handler for if datasetName changes
+    $: if ($datasetName && datasetDict) {
+        // Load the dataset
+        const pointsTensor = datasetDict[$datasetName];
+        // Update the UI state with the training dataset
+        targetDistributionSamples.set(pointsTensor);
+    }
 
 </script>
 
@@ -225,7 +188,7 @@
     .title {
         margin: 0;
         margin-left: 30px;
-        font-size: 2.1em;
+        font-size: 2.3em;
         color: white;
         font-family: var(--font-family);
     }

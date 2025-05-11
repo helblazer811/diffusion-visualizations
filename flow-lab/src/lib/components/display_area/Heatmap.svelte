@@ -13,6 +13,8 @@
 
     let canvasElement: HTMLCanvasElement; // Create a separate canvas element for each distribution
 
+    let colorScale = d3[`interpolate${colorMap}`];
+
     function plotHeatmap(
         data: tf.Tensor,
         opacity: number = 0.5,
@@ -89,7 +91,7 @@
         }
         console.log(new Date().toLocaleTimeString());
         // Draw to canvas
-        let colorScale = d3.interpolateRgb("rgb(234, 234, 234)", "rgba(0, 0, 255, 1)");
+        // let colorScale = d3.interpolateRgb("rgb(234, 234, 234)", "rgba(0, 0, 255, 1)");
         const imageData = ctx.createImageData(width, height);
 
         for (let y = 0; y < height; y++) {

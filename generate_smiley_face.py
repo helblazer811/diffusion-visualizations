@@ -8,7 +8,7 @@ def generate_smiley_face(points_per_eye=50, points_per_mouth=200, eye_std=0.1, m
 
     # Eyes: two Gaussian blobs
     eye_y = 1.0
-    eye_x_offset = 0.6
+    eye_x_offset = 1.0
     left_eye_center = [-eye_x_offset, eye_y]
     right_eye_center = [eye_x_offset, eye_y]
 
@@ -17,8 +17,8 @@ def generate_smiley_face(points_per_eye=50, points_per_mouth=200, eye_std=0.1, m
         points.extend(samples.tolist())
 
     # Mouth: arc-shaped Gaussians
-    mouth_radius = 1.0
-    mouth_y_shift = -1.5  # Move mouth further below the eyes
+    mouth_radius = 1.5
+    mouth_y_shift = -2.5  # Move mouth further below the eyes
     mouth_angle_range = np.linspace(np.pi / 6, 5 * np.pi / 6, points_per_mouth)
     mouth_points = []
     for angle in mouth_angle_range:

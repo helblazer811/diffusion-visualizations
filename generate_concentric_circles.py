@@ -2,10 +2,10 @@ import numpy as np
 import json
 
 def generate_filled_inner_and_hollow_outer_circle(
-    inner_radius=1.0,
+    inner_radius=0.8,
     outer_radius=2.0,
     inner_points=300,
-    outer_points=300,
+    outer_points=800,
     outer_noise_std=0.05,
     seed=42
 ):

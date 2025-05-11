@@ -3,13 +3,10 @@
     import * as tf from '@tensorflow/tfjs';
     import katex from 'katex';
     import 'katex/dist/katex.min.css';
-    // import h337 from 'heatmap.js';
-    // import { heatmap } from '$lib/components/display_area/heatmap.ts';
+
     import Heatmap from '$lib/components/display_area/Heatmap.svelte';
     import ContourPlot from '$lib/components/display_area/ContourPlot.svelte';
 
-    import { interfaceSettings } from '$lib/state';
-    import { UIState } from '$lib/state';
     
     // export let currentTime: number = 0.0; // Default value for the time
     // export let isPlaying: boolean = false; // Flag to indicate if the animation is playing
@@ -22,6 +19,7 @@
     export let labelIsLatex: boolean = false; // Flag to indicate if the label is in LaTeX format
     export let label: string; // Label for the distribution
     export let distributionId: string; // ID for the distribution canvas
+    export let colorMap: string = "Blues"; // Color map for the heatmap
     export let displayMode: string = "contour"; // Display mode for the distribution
 
     function displayLatex(
@@ -84,31 +82,6 @@
             .style("fill", "#7b7b7b")
             .text(text);
     }
-
-    // // Update the contour map data if the data changes
-    // $: if (data && svgElement) {
-    //     // Plot the distribution
-    //     if (displayMode === "scatter") {
-    //         // Plot the scatter plot
-    //         plotScatterPlot(data, opacity, xLocation, distributionId);
-    //     } else if (displayMode === "heatmap") {
-    //         // Plot the contour
-    //         plotHeatmapCanvas(data, opacity, xLocation, distributionId);
-    //     } else if (displayMode === "contour") {
-    //         // Plot the contour
-    //         plotContour(data, opacity, xLocation, distributionId);
-    //     } else {
-    //         console.error("Unknown display mode: ", displayMode);
-    //     }
-    //     // Plot title above the contour
-    //     // TODO change manual text display location maybe
-    //     if (!labelIsLatex) {
-    //         displayText(label, xLocation + interfaceSettings.distributionWidth / 2, 50, distributionId);
-    //     } else {
-    //         // Create a foreignObject to hold HTML
-    //         displayLatex(label, xLocation, 50 - 52, distributionId);
-    //     }
-    // }
 </script>
 
 <style>
@@ -120,6 +93,7 @@
         distributionId={distributionId}
         xLocation={xLocation}
         opacity={opacity}
+        colorMap={colorMap}
     />
 {:else if displayMode === "contour"}
     <ContourPlot
@@ -127,6 +101,7 @@
         distributionId={distributionId}
         xLocation={xLocation}
         opacity={opacity}
+        colorMap={colorMap}
     />
 {/if}
 

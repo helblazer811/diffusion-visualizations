@@ -1,7 +1,7 @@
 
 <script lang="ts"> 
     import * as d3 from 'd3';
-    import {interfaceSettings, UIState } from '$lib/state';
+    import {interfaceSettings, datasetName} from '$lib/state';
 
     export let data; // Data to plot
     export let distributionId = "target"; // ID for the distribution canvas
@@ -9,12 +9,8 @@
     let svgElement: SVGSVGElement; // Create a separate SVG element for each distribution
 
     function handleClick(){
-        console.log("Clicked on distribution: ", distributionId);
         // Change this dataset to be the current one
-        UIState.update(state => ({
-            ...state,
-            datasetName: distributionId,
-        }));
+        datasetName.set(distributionId);
     }
 
     async function plotPoints(
@@ -76,11 +72,27 @@
     .mini-distribution {
         width: 65px;
         height: 65px;
-        border: 2px solid #9f9f9f;
         position: relative;
         /* Rounded corners */
         border-radius: 5px;
         margin-left: 20px;
+    }
+
+    .active-dataset {
+        border: 3px solid #393939;
+        opacity: 1;
+        /* Add drop shadow */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .inactive-dataset {
+        opacity: 0.2;
+        border: 3px solid #c4c4c4;
+    }
+
+    .inactive-dataset:hover {
+        cursor: pointer;
+        border: 3px solid #242424;
     }
 
     svg {
@@ -90,7 +102,10 @@
 
 </style>
 
-<div class="mini-distribution" on:click={handleClick}>
+<div 
+    class={distributionId === $datasetName ? "mini-distribution active-dataset" : "mini-distribution inactive-dataset"}
+    on:click={handleClick}
+>
     <svg 
         bind:this={svgElement}
         id="{distributionId}"
