@@ -317,6 +317,34 @@
         box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px 0px;
     }
 
+    #github-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        margin-right: 10px;
+        position: absolute;
+        right: 0;
+        /* margin: 10px; */
+        z-index: 1;
+        color: white;
+        font-size: 1.7em;
+        /* font-weight: 600; */
+        text-decoration: none;
+        font-family: var(--font-family);
+        font-weight: 200; /* Thin font */
+    }
+
+    #github-logo:hover {
+        text-decoration: underline;
+    }
+
+    #github-logo img {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        /* vertical-align: middle; */
+    }
 
 </style>
 
@@ -329,8 +357,10 @@
                 Learn about diffusion and flow  models with interactive visualization. 
             </h1>
         </div>
-        <!-- </div> -->
-        <!-- <div class="title-right"></div> -->
+        <a href="https://github.com/helblazer811/DiffusionLab" id="github-logo" target="_blank">
+            <img src="/github-logo.svg" alt="GitHub Logo"/>
+            Code
+        </a>
     </div>
     <div class="training-bar-container">
         <TrainingBar />
