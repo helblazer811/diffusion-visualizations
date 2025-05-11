@@ -59,7 +59,8 @@ export const trainingConfig = {
 
 export const datasetNameToPath = {
     "Three Modes": "/datasets/three_modes.json",
-    "Spiral": "/datasets/spiral.json",
+    "Concentric Circles": "/datasets/concentric_circles.json",
+    "Smiley Face": "/datasets/smiley_face.json",
 };
 
 export const userInterfaceConfig = {};
