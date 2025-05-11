@@ -86,12 +86,12 @@ export const UIState = writable({
     // targetDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the target distribution
     // currentDistributionSamples: undefined, // This holds a tensorflow tensor containing samples from the current distribution
     // allTimeSamples: undefined, // This holds a tensorflow tensor contianing samples from multiple timesteps
-    domainRange: {
-        xMin: -3,
-        xMax: 3,
-        yMin: -3,
-        yMax: 3,
-    }
+    // domainRange: {
+    //     xMin: -3,
+    //     xMax: 3,
+    //     yMin: -3,
+    //     yMax: 3,
+    // }
 });
 
 export const datasetName = writable("Three Modes");
@@ -103,3 +103,9 @@ export const model = writable(null);
 export const currentTime = writable(0);
 export const isPlaying = writable(false);
 export const playbackSpeed = writable(30);
+export const domainRange = writable({
+    xMin: -3,
+    xMax: 3,
+    yMin: -3,
+    yMax: 3,
+});

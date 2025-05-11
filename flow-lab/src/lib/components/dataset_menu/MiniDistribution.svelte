@@ -1,7 +1,15 @@
 
 <script lang="ts"> 
     import * as d3 from 'd3';
-    import {interfaceSettings, datasetName} from '$lib/state';
+    import * as tf from '@tensorflow/tfjs';
+    import {
+        interfaceSettings, 
+        datasetName, 
+        currentDistributionSamples, 
+        allTimeSamples,
+        currentTime,
+        isPlaying
+    } from '$lib/state';
 
     export let data; // Data to plot
     export let distributionId = "target"; // ID for the distribution canvas
@@ -11,6 +19,13 @@
     function handleClick(){
         // Change this dataset to be the current one
         datasetName.set(distributionId);
+        // Empty out the current Distribution samples and the all time samples
+        currentDistributionSamples.set(tf.tensor([]));
+        allTimeSamples.set(tf.tensor([]));
+        // Set time to zero 
+        currentTime.set(0);
+        // Pause the animation
+        isPlaying.set(false);
     }
 
     async function plotPoints(

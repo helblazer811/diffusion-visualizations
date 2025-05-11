@@ -3,7 +3,7 @@
     import * as tf from '@tensorflow/tfjs';
     import * as d3 from 'd3';
 
-    import { interfaceSettings, UIState } from '$lib/state';
+    import { interfaceSettings, domainRange } from '$lib/state';
 
     export let data: tf.Tensor; // Data to plot
     export let distributionId: string = "target"; // ID for the distribution canvas
@@ -17,7 +17,6 @@
     let svgElement: SVGSVGElement; // Create a separate SVG element for each distribution
 
     let colorScale = d3[`interpolate${colorMap}`];
-
 
     function displayLatex(
         formula: string,
@@ -91,8 +90,12 @@
         // Convert data to plain 2d array
         let values = data.arraySync() as number[][];
         // 2. Build histogram
-        const xScale = d3.scaleLinear().domain([$UIState.domainRange.xMin, $UIState.domainRange.xMax]).range([0, interfaceSettings.distributionWidth]);
-        const yScale = d3.scaleLinear().domain([$UIState.domainRange.yMin, $UIState.domainRange.yMax]).range([0, interfaceSettings.distributionHeight]);
+        const xScale = d3.scaleLinear()
+            .domain([$domainRange.xMin, $domainRange.xMax])
+            .range([0, interfaceSettings.distributionWidth]);
+        const yScale = d3.scaleLinear()
+            .domain([$domainRange.yMin, $domainRange.yMax])
+            .range([0, interfaceSettings.distributionHeight]);
 
         const contours = d3.contourDensity()
             .x(d => xScale(d[0]))

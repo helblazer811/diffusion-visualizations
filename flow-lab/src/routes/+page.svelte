@@ -85,15 +85,16 @@
                 const yMin = d3.min(flatAllTimeSamples, d => d[1]);
                 const yMax = d3.max(flatAllTimeSamples, d => d[1]);
                 const domainRange = {
-                    xMin: xMin - 0.01 * (xMax - xMin),
-                    xMax: xMax + 0.01 * (xMax - xMin),
-                    yMin: yMin - 0.01 * (yMax - yMin),
-                    yMax: yMax + 0.01 * (yMax - yMin),
+                    xMin: xMin - 0.08 * (xMax - xMin),
+                    xMax: xMax + 0.08 * (xMax - xMin),
+                    yMin: yMin - 0.08 * (yMax - yMin),
+                    yMax: yMax + 0.08 * (yMax - yMin),
                 };
                 UIState.update(state => ({
                     ...state,
                     domainRange: domainRange,
                 }));
+                console.log("Domain range: ", domainRange);
                 // Make the UI state play
                 isPlaying.set(true);
             } else if (type === 'status') {
@@ -216,6 +217,8 @@
 
     // Add handler for if datasetName changes
     $: if ($datasetName && samplingWorker) {
+        // Pause the animation
+        isPlaying.set(false);
         // Load the dataset
         const pointsTensor = datasetDict[$datasetName];
         // Update the UI state with the training dataset
