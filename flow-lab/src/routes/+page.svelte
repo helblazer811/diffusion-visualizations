@@ -6,7 +6,7 @@
 
     import * as d3 from 'd3';
 
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy} from 'svelte';
     import { get } from 'svelte/store';
     // Load up the application config
     import { 
@@ -46,6 +46,14 @@
                 const pointsTensor = tf.tensor(data.points);
                 return pointsTensor;
             });
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.code === 'Space') {
+            event.preventDefault(); // Prevent page scrolling
+            // Toggle the play/pause state
+            isPlaying.update(state => !state);
+        }
     }
 
     async function loadModel(modelJSONPath: string) {
@@ -119,7 +127,8 @@
             // console.log(`Loaded dataset ${name} from ${path}`);
             // console.log(`Dataset ${name} shape: `, pointsTensor.shape);
         }
-        // Save the dataset dict to the 
+        // Add a listener to the window to handle keydown events
+        window.addEventListener('keydown', handleKeydown);
         // Load up the default cached model
         const defaultModelType = readonlyUIState.modelType;
         const defaultDataset: string = $datasetName;
@@ -199,6 +208,12 @@
         }
     });
 
+    onDestroy(() => {
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('keydown', handleKeydown);
+        }
+    });
+
     // Add handler for if datasetName changes
     $: if ($datasetName && samplingWorker) {
         // Load the dataset
@@ -215,13 +230,6 @@
             // Set the model in the UI state
             model.set(loadedModel);
         });
-        console.log(defaultModelType)
-        console.log(defaultModelPath)
-        // Set up web worker threads for sampling and training
-        // const samplingWorker = new Worker(
-        //     new URL('$lib/diffusion/workers/sampling_worker.ts', import.meta.url),
-        //     { type: 'module' }
-        // );
         // Regenerate all of the samples 
         callSamplingWorkerThread(
             samplingWorker,

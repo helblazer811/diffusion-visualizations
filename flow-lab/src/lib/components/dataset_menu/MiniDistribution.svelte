@@ -33,9 +33,6 @@
         xMax += margin * xRange;
         yMin -= margin * yRange;
         yMax += margin * yRange;
-        console.log("xMin: ", xMin);
-        console.log("xMax: ", xMax);
-        console.log(data)
         const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, 65]);
         const yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, 65]);
         // Make a scatter plot
@@ -61,8 +58,6 @@
 
     // If data changes, replot the points
     $: if (data && svgElement) {
-        console.log("Plotting points");
-        console.log(data.shape)
         plotPoints(data, distributionId);
     }
 
