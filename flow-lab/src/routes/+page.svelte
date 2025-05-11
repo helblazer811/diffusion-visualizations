@@ -28,7 +28,7 @@
     import TimeSlider from '$lib/components/time_slider/TimeSlider.svelte';
     import TrainingBar from '$lib/components/TrainingBar.svelte';
     import DisplayArea from '$lib/components/display_area/DisplayArea.svelte';
-    import MiniDistribution from '$lib/components/dataset_menu/MiniDistribution.svelte';
+    import DatasetMenu from '$lib/components/dataset_menu/DatasetMenu.svelte';
     // Import helper tf functions
     import { sampleMultivariateNormal } from '$lib/diffusion/utils';
 
@@ -301,13 +301,6 @@
 
     .main-area-right {
         flex: 1;
-        background-color: var(--light-gray);
-        display: flex;
-        flex-direction: column;
-        align-items: left;      /* Center items vertically */
-        justify-content: center;
-        gap: 20px;                /* Add space between items */
-        padding-bottom: 100px;
     }
 
 
@@ -334,9 +327,7 @@
             <TimeSlider /> 
         </div>
         <div class="main-area-right">
-            {#each Object.entries(datasetDict) as [name, data]}
-                <MiniDistribution data={data} distributionId={name}/>
-            {/each}
+            <DatasetMenu datasetDict={datasetDict}/>
         </div>
         <!-- <DatasetMenu />  Dataset selector menu to choose the dataset to train on -->
     </div>

@@ -70,7 +70,7 @@
         position: relative;
         /* Rounded corners */
         border-radius: 5px;
-        margin-left: 20px;
+        /* margin-left: 20px; */
     }
 
     .active-dataset {
